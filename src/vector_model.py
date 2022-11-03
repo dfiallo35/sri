@@ -1,0 +1,55 @@
+
+
+#given a query and a list of documents, returns a list of documents sorted by relevance
+def vector_model(query:str, documents:list):
+    """
+    :param query: string
+    :param documents: list of documents
+    :return: list of documents sorted by relevance
+    """
+    
+    raise NotImplementedError
+
+
+#guiven a list of terms and documents return the matrix of frequency of terms in documents
+def get_terms_frequency(terms:list, documents:list):
+    """
+    :param terms: list of terms
+    :param documents: list of documents
+    :return: matrix of frequency of terms in documents
+    """
+
+    raise NotImplementedError
+
+
+
+#given the frequency matrix return the matrix of tf-idf of terms in documents
+def get_tf_idf(terms_frequency):
+    """
+    :param terms_frequency: matrix of frequency of terms in documents
+    :return: matrix of tf-idf of terms in documents
+    """
+    
+    raise NotImplementedError
+
+
+#given tf and idf return the weight of a term in a document
+def get_term_weight(tf, idf):
+    """
+    :param tf: matrix tf of terms in documents
+    :param idf: inverse document frequency
+    :return: weight of a term in a document
+    """
+    
+    raise NotImplementedError
+
+
+#calculate the similarity and return the ranking of documents
+def get_ranking(weight, documents):
+    """
+    :param weight: matrix of weights of terms in documents
+    :param documents: list of documents
+    """
+
+    raise NotImplementedError
+
