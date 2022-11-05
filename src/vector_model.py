@@ -19,15 +19,25 @@ def get_terms(query:str):
 
 
 
-#guiven a list of terms and documents return the matrix of frequency of terms in documents
+#given a list of terms and documents return the frequency matrix of terms in documents
 def get_terms_frequency(terms:list, documents:list):
     """
     :param terms: list of terms
     :param documents: list of documents
     :return: matrix of frequency of terms in documents
     """
-
-    raise NotImplementedError
+    terms_freq = []
+    for doc in documents:
+        if isfile(doc):
+            _document = open(doc, 'r')
+            doc_data = _document.read()
+            _document.close()
+            terms_freq_doc = re.findall('\\b' + '\\b|\\b'.join(terms) + '\\b', doc_data)
+            terms_freq.append([terms_freq_doc.count(term) for term in terms])
+            
+        else:
+            raise FileNotFoundError
+    return terms_freq
 
 
 
