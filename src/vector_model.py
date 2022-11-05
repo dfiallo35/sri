@@ -23,6 +23,20 @@ def get_terms(query:str):
     return re.findall(r'\w+', query)
 
 
+#Convert each letter of the terms to [(lowercase)(uppercase)]
+def convert_to_lower_upper(terms: list):
+    """
+    :param terms: list of terms
+    :return: list of terms converted to [(lowercase)(uppercase)]
+    """
+    outterms= []
+    for term in terms:
+        word=''
+        for letter in term:
+            word += '[' + letter.lower() + letter.upper() + ']'
+        outterms.append(word)
+    return outterms
+
 
 #given a list of terms and documents return the frequency matrix of terms in documents
 def get_terms_frequency(terms:list, documents:list):
