@@ -65,8 +65,8 @@ def get_terms_frequency(terms:list, documents:list):
             _document = open(doc, 'r')
             doc_data = _document.read()
             _document.close()
-            terms_freq_doc = re.findall('\\b' + '\\b|\\b'.join(terms) + '\\b', doc_data)
-            terms_freq.append([terms_freq_doc.count(term) for term in terms])
+            terms_freq_doc = re.findall('\\b' + '\\b|\\b'.join(convert_to_lower_upper(terms)) + '\\b', doc_data)
+            terms_freq.append([terms_freq_doc.count(term) for term in all_lower(terms)])
             
         else:
             raise FileNotFoundError
