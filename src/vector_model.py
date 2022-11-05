@@ -1,3 +1,5 @@
+import re
+from os.path import isfile
 
 
 #given a query and a list of documents, returns a list of documents sorted by relevance
@@ -9,6 +11,12 @@ def vector_model(query:str, documents:list):
     """
     
     raise NotImplementedError
+
+
+#given a query return the list of terms
+def get_terms(query:str):
+    return re.findall(r'\w+', query)
+
 
 
 #guiven a list of terms and documents return the matrix of frequency of terms in documents
