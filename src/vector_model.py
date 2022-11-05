@@ -9,8 +9,10 @@ def vector_model(query:str, documents:list):
     :param documents: list of documents
     :return: list of documents sorted by relevance
     """
-    
-    raise NotImplementedError
+
+    terms = get_terms(query)
+    terms_frequency = get_terms_frequency(terms, documents)
+
 
 
 #given a query return the list of terms
