@@ -12,6 +12,9 @@ def vector_model(query:str, documents:list):
 
     terms = get_terms(query)
     terms_frequency = get_terms_frequency(terms, documents)
+    tf, idf = get_tf_idf(terms_frequency)
+    weight = get_term_weight(tf, idf)
+    ranking = get_ranking(weight, documents)
 
 
 
