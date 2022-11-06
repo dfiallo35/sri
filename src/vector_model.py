@@ -103,8 +103,7 @@ def get_term_weight(tf, idf):
     """    
     w=[]
     for j in range(len(tf[0])):
-        w.append([])
-        w[j]=[(tf[i][j]*idf[i]) for i in range(len(tf))]
+        w.append([(tf[i][j]*idf[i]) for i in range(len(tf))])        
     return w
 
     
