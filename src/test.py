@@ -1,19 +1,25 @@
 import vector_model as vm
 import numpy as np
-freq=vm.get_terms_frequency(terms=['requerimientos','clase','class','trabajo'], 
-                         documents=['./src/script.txt','./src/script2.txt'])
-                        # documents=['./docs/Search Engine Optimization.docx','./docs/Seminario2(C++11,C++14).pdf','./docs/Seminario1(C++98).pdf',
-                        # './docs/Seminario4(Golang).pdf'])
+
+terms=['requerimientos','clase','class','trabajo', 'clase','class']
+documents=['./src/script.txt','./src/script2.txt']
+
+freq=vm.get_terms_frequency(terms, documents)
 print(f"freq:{freq}")
+
+
 tf,idf=vm.get_tf_idf(freq)
 print(f"Tf:{tf}")
 print(f"Idf:{idf}")
 
-w=vm.get_term_weight(tf,idf)
+w=vm.get_terms_weight(tf,idf)
 print(f"w:{w}")
 
+wq=vm.get_query_weight(terms,idf,0.5)
+print(f"wq:{wq}")
 
-# print(a[0][1])
-# items = open("script.txt", 'r')
-# lists = items.read().split("\n")
-# lists = [item.split() for item in lists]
+sim=vm.get_similarity(w,wq)
+print(f"sim:{sim}")
+
+ranking=vm.get_ranking(sim, documents)
+print(f"ranking:{ranking}")
