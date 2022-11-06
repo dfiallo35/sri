@@ -80,23 +80,19 @@ def get_tf_idf(terms_frequency:list):
     :param terms_frequency: matrix of frequency of terms in documents
     :return: matrix of tf-idf of terms in documents
     """
-    # ni=[]
     tf=[]
     idf=[]
     for j in range(len(terms_frequency[0])):
         count_ni=0
         tf.append([])
         tf[j]=[]
-        # count_freq.append(0)
         for i in range(len(terms_frequency)):
-            tf[j].append(0)
-            tf[j][i]=terms_frequency[i][j]/max(terms_frequency[i])
+            # tf[j].append(0)
+            # tf[j][i]=terms_frequency[i][j]/max(terms_frequency[i])
+            tf[j].append(terms_frequency[i][j]/max(terms_frequency[i]))
             if(terms_frequency[i][j]!=0):
-                count_ni+=1            
-        # ni.append(count_ni)
-        idf.append(np.log(len(terms_frequency)/count_ni))
-        # tf.append([terms_freq_doc.count(term) for term in all_lower(terms)])
-    # idf=[np.log(len(terms_frequency)/ni[i])for i in range(len(ni))]    
+                count_ni+=1        
+        idf.append(np.log(len(terms_frequency)/count_ni))  
     return tf,idf
     
 
@@ -106,11 +102,22 @@ def get_term_weight(tf, idf):
     :param tf: matrix tf of terms in documents
     :param idf: inverse document frequency
     :return: weight of a term in a document
-    """
+    """    
+    w=[]
+    # for j in range(len(tf[0])):
+    #     w.append([])
+    #     w[j]=[]
+    #     for i in range(len(tf)):
+    #         w[j].append(tf[i][j]*idf[i])
 
+    for j in range(len(tf[0])):
+        w.append([])
+        w[j]=[(tf[i][j]*idf[i]) for i in range(len(tf))]
+        # for i in range(len(tf)):
+        #     w[j].append(tf[i][j]*idf[i])
+    return w
 
     
-    raise NotImplementedError
 
 
 #calculate the similarity and return the ranking of documents

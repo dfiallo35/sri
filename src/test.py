@@ -9,8 +9,11 @@ tf,idf=vm.get_tf_idf(a)
 print(f"Tf:{tf}")
 print(f"Idf:{idf}")
 
+w=vm.get_term_weight(tf,idf)
+print(f"w:{w}")
+
 
 # print(a[0][1])
-            # items = open("script.txt", 'r')
-            # lists = items.read().split("\n")
-            # lists = [item.split() for item in lists]
+# items = open("script.txt", 'r')
+# lists = items.read().split("\n")
+# lists = [item.split() for item in lists]
