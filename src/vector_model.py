@@ -1,6 +1,6 @@
 import re
 from os.path import isfile
-
+import numpy as np
 
 #given a query and a list of documents, returns a list of documents sorted by relevance
 def vector_model(query:str, documents:list):
@@ -75,14 +75,30 @@ def get_terms_frequency(terms:list, documents:list):
 
 
 #given the frequency matrix return the matrix of tf-idf of terms in documents
-def get_tf_idf(terms_frequency):
+def get_tf_idf(terms_frequency:list):
     """
     :param terms_frequency: matrix of frequency of terms in documents
     :return: matrix of tf-idf of terms in documents
     """
+    # ni=[]
+    tf=[]
+    idf=[]
+    for j in range(len(terms_frequency[0])):
+        count_ni=0
+        tf.append([])
+        tf[j]=[]
+        # count_freq.append(0)
+        for i in range(len(terms_frequency)):
+            tf[j].append(0)
+            tf[j][i]=terms_frequency[i][j]/max(terms_frequency[i])
+            if(terms_frequency[i][j]!=0):
+                count_ni+=1            
+        # ni.append(count_ni)
+        idf.append(np.log(len(terms_frequency)/count_ni))
+        # tf.append([terms_freq_doc.count(term) for term in all_lower(terms)])
+    # idf=[np.log(len(terms_frequency)/ni[i])for i in range(len(ni))]    
+    return tf,idf
     
-    raise NotImplementedError
-
 
 #given tf and idf return the weight of a term in a document
 def get_term_weight(tf, idf):
@@ -91,6 +107,8 @@ def get_term_weight(tf, idf):
     :param idf: inverse document frequency
     :return: weight of a term in a document
     """
+
+
     
     raise NotImplementedError
 
