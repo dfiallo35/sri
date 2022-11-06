@@ -87,8 +87,6 @@ def get_tf_idf(terms_frequency:list):
         tf.append([])
         tf[j]=[]
         for i in range(len(terms_frequency)):
-            # tf[j].append(0)
-            # tf[j][i]=terms_frequency[i][j]/max(terms_frequency[i])
             tf[j].append(terms_frequency[i][j]/max(terms_frequency[i]))
             if(terms_frequency[i][j]!=0):
                 count_ni+=1        
@@ -104,17 +102,9 @@ def get_term_weight(tf, idf):
     :return: weight of a term in a document
     """    
     w=[]
-    # for j in range(len(tf[0])):
-    #     w.append([])
-    #     w[j]=[]
-    #     for i in range(len(tf)):
-    #         w[j].append(tf[i][j]*idf[i])
-
     for j in range(len(tf[0])):
         w.append([])
         w[j]=[(tf[i][j]*idf[i]) for i in range(len(tf))]
-        # for i in range(len(tf)):
-        #     w[j].append(tf[i][j]*idf[i])
     return w
 
     
