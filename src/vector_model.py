@@ -1,6 +1,7 @@
 import re
 from os.path import isfile
 import numpy as np
+import operator
 
 #given a query and a list of documents, returns a list of documents sorted by relevance
 def vector_model(query:str, documents:list):
@@ -13,9 +14,10 @@ def vector_model(query:str, documents:list):
     terms = get_terms(query)
     terms_frequency = get_terms_frequency(terms, documents)
     tf, idf = get_tf_idf(terms_frequency)
-    weight = get_term_weight(tf, idf)
-    ranking = get_ranking(weight, documents)
-
+    weight = get_terms_weight(tf, idf)
+    wq = get_query_weight(terms,idf,0.5)
+    sim=get_similarity(weight,wq)
+    ranking = get_ranking(sim, documents)
 
 
 #given a query return the list of terms
@@ -73,7 +75,6 @@ def get_terms_frequency(terms:list, documents:list):
     return terms_freq
 
 
-
 #given the frequency matrix return the matrix of tf-idf of terms in documents
 def get_tf_idf(terms_frequency:list):
     """
@@ -87,34 +88,67 @@ def get_tf_idf(terms_frequency:list):
         tf.append([])
         tf[j]=[]
         for i in range(len(terms_frequency)):
-            tf[j].append(terms_frequency[i][j]/max(terms_frequency[i]))
+            tf[j].append(terms_frequency[i][j]/(max(terms_frequency[i]) if  max(terms_frequency[i])>0 else 1))
             if(terms_frequency[i][j]!=0):
                 count_ni+=1        
         idf.append(np.log(len(terms_frequency)/count_ni))  
     return tf,idf
     
 
-#given tf and idf return the weight of a term in a document
-def get_term_weight(tf, idf):
+#given tf and idf return the weight of each term in each document
+def get_terms_weight(tf, idf):
     """
     :param tf: matrix tf of terms in documents
     :param idf: inverse document frequency
-    :return: weight of a term in a document
+    :param alpha: smoothed, dampens the frequency of the term
+    :return: weight of each term in each document
     """    
     w=[]
     for j in range(len(tf[0])):
         w.append([(tf[i][j]*idf[i]) for i in range(len(tf))])        
     return w
 
+
+#given query and return the weight of each term in the query
+def get_query_weight(terms,idf,alpha=0):
+    """
+    :param tf: matrix tf of terms in documents
+    :param idf: inverse document frequency
+    :param alpha: smoothed, dampens the frequency of the term
+    :return: weight of a term in a document
+    """    
+    freq=[terms.count(term) for term in terms]    
+    wq=[(alpha + (1-alpha) * freq[i] / max(freq)) * idf[i] for i in range(len(terms))]
+    return wq
     
 
-
-#calculate the similarity and return the ranking of documents
-def get_ranking(weight, documents):
+#calculate the similarity between the query and the documents
+def get_similarity(weight,wq):
     """
     :param weight: matrix of weights of terms in documents
+    :param wq: list of weights of terms in query
+    """
+    sim=[]
+    for j in range(len(weight)):  
+        sum1=sum2=sum3=0
+        for i in range(len(weight[0])):
+            sum1 += weight[j][i]*wq[i]
+            sum2 += np.power(weight[j][i],2)
+            sum3 += np.power(wq[i],2)
+        sim.append(sum1 / (np.sqrt(sum2)*np.sqrt(sum3) if (np.sqrt(sum2)*np.sqrt(sum3)!=0) else 1))
+    return sim
+        
+
+#calculate the ranking of documents
+def get_ranking(similarity, documents):
+    """
+    :param similarity: 
     :param documents: list of documents
     """
-
-    raise NotImplementedError
+    sim_docs = { documents[i]:similarity[i] for i in range(len(similarity))}   
+    ranking_sim = sorted(sim_docs.items(), key=operator.itemgetter(1), reverse=True) 
+    return [key for (key,value) in ranking_sim]
+    
+        
+    
 
