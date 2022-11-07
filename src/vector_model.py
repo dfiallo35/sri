@@ -91,7 +91,7 @@ def get_tf_idf(terms_frequency:list):
             tf[j].append(terms_frequency[i][j]/(max(terms_frequency[i]) if  max(terms_frequency[i])>0 else 1))
             if(terms_frequency[i][j]!=0):
                 count_ni+=1        
-        idf.append(np.log(len(terms_frequency)/count_ni))  
+        idf.append(np.log(len(terms_frequency)/(count_ni if count_ni!=0 else 1)))  
     return tf,idf
     
 

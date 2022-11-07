@@ -23,3 +23,4 @@ print(f"sim:{sim}")
 
 ranking=vm.get_ranking(sim, documents)
 print(f"ranking:{ranking}")
+
