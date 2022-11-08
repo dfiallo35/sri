@@ -1,154 +1,90 @@
 import re
-from os.path import isfile
+from os import getcwd
+from os.path import isfile, join
 import numpy as np
 import operator
 
-#given a query and a list of documents, returns a list of documents sorted by relevance
-def vector_model(query:str, documents:list):
-    """
-    :param query: string
-    :param documents: list of documents
-    :return: list of documents sorted by relevance
-    """
-
-    terms = get_terms(query)
-    terms_frequency = get_terms_frequency(terms, documents)
-    tf, idf = get_tf_idf(terms_frequency)
-    weight = get_terms_weight(tf, idf)
-    wq = get_query_weight(terms,idf,0.5)
-    sim=get_similarity(weight,wq)
-    ranking = get_ranking(sim, documents)
+documentslist= [join(getcwd(), join('docs', 'a.txt')),
+                join(getcwd(), join('docs', 'b.txt')),
+                join(getcwd(), join('docs', 'c.txt')),
+                join(getcwd(), join('docs', 'd.txt'))
+        ]
 
 
-#given a query return the list of terms
-def get_terms(query:str):
-    return re.findall(r'\w+', query)
+class VectorModel:
+    def __init__(self):
+        self.docterms= dict()
+        self.stopwords= self.get_stopwords()
+        # self.regex_stopwords=  self.get_regex_stopwords(self.stopwords)
 
+    def vectorial_model(self, query:str, documents:list):
+        docs_freq= self.get_docs_terms_frequency(documents)
+        terms_freq= self.get_query_frequency(query)
+        print(terms_freq)
 
-#Convert each letter of the terms to [(lowercase)(uppercase)]
-def convert_to_lower_upper(terms: list):
-    """
-    :param terms: list of terms
-    :return: list of terms converted to [(lowercase)(uppercase)]
-    """
-    outterms= []
-    for term in terms:
-        word=''
-        for letter in term:
-            word += '[' + letter.lower() + letter.upper() + ']'
-        outterms.append(word)
-    return outterms
-
-
-def all_lower(terms: list):
-    """
-    :param terms: list of terms
-    :return: list of terms converted to lowercase
-    """
-    outterms= []
-    for term in terms:
-        word=''
-        for letter in term:
-            word += letter.lower()
-        outterms.append(word)
-    return outterms
-
-
-#given a list of terms and documents return the frequency matrix of terms in documents
-def get_terms_frequency(terms:list, documents:list):
-    """
-    :param terms: list of terms
-    :param documents: list of documents
-    :return: matrix of frequency of terms in documents
-    """
-    terms_freq = []
-    for doc in documents:
-        if isfile(doc):
-            _document = open(doc, 'r')
-            doc_data = _document.read()
-            _document.close()
-            terms_freq_doc = re.findall('\\b' + '\\b|\\b'.join(convert_to_lower_upper(terms)) + '\\b', doc_data)
-            terms_freq.append([terms_freq_doc.count(term) for term in all_lower(terms)])
-            
-        else:
-            raise FileNotFoundError
-    return terms_freq
-
-
-#given the frequency matrix return the matrix of tf-idf of terms in documents
-def get_tf_idf(terms_frequency:list):
-    """
-    :param terms_frequency: matrix of frequency of terms in documents
-    :return: matrix of tf-idf of terms in documents
-    """
-    tf=[]
-    idf=[]
-    for j in range(len(terms_frequency[0])):
-        count_ni=0
-        tf.append([])
-        tf[j]=[]
-        for i in range(len(terms_frequency)):
-            tf[j].append(terms_frequency[i][j]/(max(terms_frequency[i]) if  max(terms_frequency[i])>0 else 1))
-            if(terms_frequency[i][j]!=0):
-                count_ni+=1        
-        idf.append(np.log(len(terms_frequency)/count_ni))  
-    return tf,idf
-    
-
-#given tf and idf return the weight of each term in each document
-def get_terms_weight(tf, idf):
-    """
-    :param tf: matrix tf of terms in documents
-    :param idf: inverse document frequency
-    :param alpha: smoothed, dampens the frequency of the term
-    :return: weight of each term in each document
-    """    
-    w=[]
-    for j in range(len(tf[0])):
-        w.append([(tf[i][j]*idf[i]) for i in range(len(tf))])        
-    return w
-
-
-#given query and return the weight of each term in the query
-def get_query_weight(terms,idf,alpha=0):
-    """
-    :param tf: matrix tf of terms in documents
-    :param idf: inverse document frequency
-    :param alpha: smoothed, dampens the frequency of the term
-    :return: weight of a term in a document
-    """    
-    freq=[terms.count(term) for term in terms]    
-    wq=[(alpha + (1-alpha) * freq[i] / max(freq)) * idf[i] for i in range(len(terms))]
-    return wq
-    
-
-#calculate the similarity between the query and the documents
-def get_similarity(weight,wq):
-    """
-    :param weight: matrix of weights of terms in documents
-    :param wq: list of weights of terms in query
-    """
-    sim=[]
-    for j in range(len(weight)):  
-        sum1=sum2=sum3=0
-        for i in range(len(weight[0])):
-            sum1 += weight[j][i]*wq[i]
-            sum2 += np.power(weight[j][i],2)
-            sum3 += np.power(wq[i],2)
-        sim.append(sum1 / (np.sqrt(sum2)*np.sqrt(sum3) if (np.sqrt(sum2)*np.sqrt(sum3)!=0) else 1))
-    return sim
         
 
-#calculate the ranking of documents
-def get_ranking(similarity, documents):
-    """
-    :param similarity: 
-    :param documents: list of documents
-    """
-    sim_docs = { documents[i]:similarity[i] for i in range(len(similarity))}   
-    ranking_sim = sorted(sim_docs.items(), key=operator.itemgetter(1), reverse=True) 
-    return [key for (key,value) in ranking_sim]
-    
-        
-    
+    def get_docs_terms_frequency(self, documents:list):
+        """
+        :param documents: list of documents
+        :return: dictionary with terms and their frequency in each document
+        """
+        for doc in documents:
+            data= self.get_doc_data(doc)
+            terms= self.get_split_terms(data)
+            for term in terms:
+                if self.docterms.get(term) == None:
+                    self.docterms[term] = {doc:1}
+                    
+                else:
+                    if self.docterms.get(term).get(doc) == None:
+                        self.docterms[term][doc] = 1
+                    else:
+                        self.docterms[term][doc] = self.docterms[term][doc] + 1
+        return self.docterms
 
+
+    def get_regex_stopwords(self, stopwordslist:list):
+        for i in range(len(stopwordslist)):
+            stopwordslist[i]= '(' + stopwordslist[i] + ')'
+        return ''.join(stopwordslist)
+
+    def get_not_stopwords_terms(self, terms:list):
+        for term in terms:
+            if term in self.stopwords:
+                terms.remove(term)
+        return terms
+
+    def get_doc_data(self, document:str):
+        doc= open(document, 'r')
+        docdata=doc.read()
+        doc.close()
+        return docdata.lower()
+
+    def get_split_terms(self, document:str):
+        doc= re.findall(r'\w+', document)
+        return self.get_not_stopwords_terms(doc)
+
+    def get_stopwords(self):
+        stopwords_doc = open(join(getcwd(), 'data\\spanish_stopwords.txt'), 'r')
+        stopwords_data = stopwords_doc.read()
+        stopwords_doc.close()
+        return re.findall(r'\w+', stopwords_data)
+
+    #given a list of terms and documents return the frequency matrix of terms in documents
+    def get_query_frequency(self, query:str):
+        terms= re.findall('\w+', query)
+        query_freq=dict()
+        for term in terms:
+            if self.docterms.get(term) != None:
+                query_freq[term]= self.docterms.get(term)
+        return query_freq
+
+    def get_tf_idf(self, terms_frequency:dict):
+        pass
+
+                
+
+
+a = VectorModel()
+a.vectorial_model('pollo casa nodo', documentslist)
