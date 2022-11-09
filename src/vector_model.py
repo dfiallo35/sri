@@ -11,7 +11,11 @@ documentslist= [join(getcwd(), join('docs', 'a.txt')),
 
 
 #TODO: get data set
+#TODO: make data sets
 #TODO: ranking limit
+#TODO: verify if the file exists
+#TODO: verify log(0) and division by zero
+#TODO: visual
 class VectorModel:
     def __init__(self):
         self.docterms= dict()
