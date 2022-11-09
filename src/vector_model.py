@@ -1,8 +1,7 @@
 import re
 from os import getcwd
 from os.path import isfile, join
-import numpy as np
-import operator
+from math import log
 
 documentslist= [join(getcwd(), join('docs', 'a.txt')),
                 join(getcwd(), join('docs', 'b.txt')),
@@ -15,13 +14,10 @@ class VectorModel:
     def __init__(self):
         self.docterms= dict()
         self.stopwords= self.get_stopwords()
-        # self.regex_stopwords=  self.get_regex_stopwords(self.stopwords)
 
     def vectorial_model(self, query:str, documents:list):
         docs_freq= self.get_docs_terms_frequency(documents)
-        terms_freq= self.get_query_frequency(query)
-        print(terms_freq)
-
+        print(docs_freq)
         
 
     def get_docs_terms_frequency(self, documents:list):
@@ -32,22 +28,29 @@ class VectorModel:
         for doc in documents:
             data= self.get_doc_data(doc)
             terms= self.get_split_terms(data)
+            max= 0
             for term in terms:
                 if self.docterms.get(term) == None:
-                    self.docterms[term] = {doc:1}
+                    self.docterms[term] = {doc:{'freq':1, 'tf':0, 'idf':0, 'w':0}}
+                    if max < 1:
+                        max= 1
                     
                 else:
                     if self.docterms.get(term).get(doc) == None:
-                        self.docterms[term][doc] = 1
+                        self.docterms[term][doc] = {'freq':1, 'tf':0, 'idf':0, 'w':0}
+                        if max < 1:
+                            max= 1
                     else:
-                        self.docterms[term][doc] = self.docterms[term][doc] + 1
+                        self.docterms[term][doc]['freq'] = self.docterms[term][doc]['freq'] + 1
+                        if max < self.docterms[term][doc]['freq']:
+                            max= self.docterms[term][doc]['freq']
+            self.tf(doc, terms, max)
+        self.idf()
+        self.w()
+            
         return self.docterms
 
 
-    def get_regex_stopwords(self, stopwordslist:list):
-        for i in range(len(stopwordslist)):
-            stopwordslist[i]= '(' + stopwordslist[i] + ')'
-        return ''.join(stopwordslist)
 
     def get_not_stopwords_terms(self, terms:list):
         for term in terms:
@@ -70,20 +73,6 @@ class VectorModel:
         stopwords_data = stopwords_doc.read()
         stopwords_doc.close()
         return re.findall(r'\w+', stopwords_data)
-
-    #given a list of terms and documents return the frequency matrix of terms in documents
-    def get_query_frequency(self, query:str):
-        terms= re.findall('\w+', query)
-        query_freq=dict()
-        for term in terms:
-            if self.docterms.get(term) != None:
-                query_freq[term]= self.docterms.get(term)
-        return query_freq
-
-    def get_tf_idf(self, terms_frequency:dict):
-        pass
-
-                
 
 
 a = VectorModel()
