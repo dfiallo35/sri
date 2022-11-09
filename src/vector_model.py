@@ -21,19 +21,21 @@ class VectorModel:
         self.docterms= dict()
         self.queryterms= dict()
         self.querysim= dict()
-        self.stopwords= self.get_stopwords()
+        self.stopwords= self.__get_stopwords()
 
+    def find(self, query:str, documents:list):
+        self.__vectorial_model(query, documents)
 
-    def vectorial_model(self, query:str, documents:list):
-        self.docterms_data(documents)
-        self.query_data(query.lower())
-        self.sim()
-        return self.ranking()
+    def __vectorial_model(self, query:str, documents:list):
+        self.__docterms_data(documents)
+        self.__query_data(query.lower())
+        self.__sim()
+        return self.__ranking()
     
-    def ranking(self):
+    def __ranking(self):
         return sorted(self.querysim.items(), key=lambda x: x[1], reverse=True)
     
-    def sim(self):
+    def __sim(self):
         for term in self.queryterms:
             for doc in self.docterms[term]:
                 if self.querysim.get(doc) == None:
@@ -42,14 +44,14 @@ class VectorModel:
                     self.querysim[doc] = round(self.querysim[doc] + self.queryterms[term] * self.docterms[term][doc]['w'], 3)
 
 
-    def query_data(self, query:str, alpha:int=0):
+    def __query_data(self, query:str, alpha:int=0):
         """
         :param query: query to search
         :param queryterms: empty dictionary to store terms and their weight
         :param alpha: parameter to calculate w
         :return: dictionary with the query terms and their weight
         """
-        terms= self.get_split_terms(query)
+        terms= self.__get_split_terms(query)
         terms_set= set(terms)
         for term in terms_set:
             if term in self.docterms:
@@ -69,15 +71,15 @@ class VectorModel:
 
         
 
-    def docterms_data(self, documents:list):
+    def __docterms_data(self, documents:list):
         """
         :param documents: list of documents
         :docterms: empty dictionary to store terms and their frequency, tf, idf and w
         :return: dictionary with terms and their frequency, tf, idf and w
         """
         for doc in documents:
-            data= self.get_doc_data(doc)
-            terms= self.get_split_terms(data)
+            data= self.__get_doc_data(doc)
+            terms= self.__get_split_terms(data)
             max= 0
             for term in terms:
                 if self.docterms.get(term) == None:
@@ -94,13 +96,13 @@ class VectorModel:
                         self.docterms[term][doc]['freq'] = self.docterms[term][doc]['freq'] + 1
                         if max < self.docterms[term][doc]['freq']:
                             max= self.docterms[term][doc]['freq']
-            self.tf(doc, terms, max)
-        self.idf(len(documents))
-        self.w()
+            self.__tf(doc, terms, max)
+        self.__idf(len(documents))
+        self.__w()
         return self.docterms
 
 
-    def tf(self, doc:str, terms:list, max:int):
+    def __tf(self, doc:str, terms:list, max:int):
         for term in terms:
             if max != 0:
                 self.docterms[term][doc]['tf'] = round(self.docterms[term][doc]['freq']/max, 3)
@@ -108,35 +110,35 @@ class VectorModel:
                 self.docterms[term][doc]['freq'] = 0
 
     #TODO: log(0) error
-    def idf(self, docslen):
+    def __idf(self, docslen):
         for term in self.docterms:
             for doc in self.docterms[term]:
                 self.docterms[term][doc]['idf'] = round( ( log(docslen / len(self.docterms[term]) ) ), 3)
     
-    def w(self):
+    def __w(self):
         for term in self.docterms:
             for doc in self.docterms[term]:
                 self.docterms[term][doc]['w'] = round(self.docterms[term][doc]['tf'] * self.docterms[term][doc]['idf'], 3)
 
 
 
-    def get_not_stopwords_terms(self, terms:list):
+    def __get_not_stopwords_terms(self, terms:list):
         for term in terms:
             if term in self.stopwords:
                 terms.remove(term)
         return terms
 
-    def get_doc_data(self, document:str):
+    def __get_doc_data(self, document:str):
         doc= open(document, 'r')
         docdata=doc.read()
         doc.close()
         return docdata.lower()
 
-    def get_split_terms(self, document:str):
+    def __get_split_terms(self, document:str):
         doc= re.findall(r'\w+', document)
-        return self.get_not_stopwords_terms(doc)
+        return self.__get_not_stopwords_terms(doc)
 
-    def get_stopwords(self):
+    def __get_stopwords(self):
         stopwords_doc = open(join(getcwd(), 'data\\spanish_stopwords.txt'), 'r')
         stopwords_data = stopwords_doc.read()
         stopwords_doc.close()
@@ -144,7 +146,7 @@ class VectorModel:
 
 
 a = VectorModel()
-rank= a.vectorial_model(' ajo mano  Perro CaSa   pilar DadO dado', documentslist)
+rank= a.find(' ajo mano  Perro CaSa   pilar DadO dado', documentslist)
 print(a.docterms)
 print(a.queryterms)
 print(a.querysim)
