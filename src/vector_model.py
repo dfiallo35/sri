@@ -22,7 +22,7 @@ class VectorModel:
 
     def vectorial_model(self, query:str, documents:list):
         self.docterms_data(documents)
-        self.query_data(query)
+        self.query_data(query.lower())
         self.sim()
         return self.ranking()
     
