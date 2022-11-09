@@ -51,6 +51,25 @@ class VectorModel:
         return self.docterms
 
 
+    def tf(self, doc:str, terms:list, max:int):
+        for term in terms:
+            if max != 0:
+                self.docterms[term][doc]['tf'] = round(self.docterms[term][doc]['freq']/max, 3)
+            else:
+                self.docterms[term][doc]['freq'] = 0
+
+    #TODO: log(0) error
+    def idf(self):
+        for term in self.docterms:
+            for doc in self.docterms[term]:
+                self.docterms[term][doc]['idf'] = round(log(len(self.docterms)/len(self.docterms[term])), 3)
+    
+    def w(self):
+        for term in self.docterms:
+            for doc in self.docterms[term]:
+                self.docterms[term][doc]['w'] = round(self.docterms[term][doc]['tf'] * self.docterms[term][doc]['idf'], 3)
+
+
 
     def get_not_stopwords_terms(self, terms:list):
         for term in terms:
