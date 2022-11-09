@@ -13,6 +13,8 @@ documentslist= [join(getcwd(), join('docs', 'a.txt')),
 class VectorModel:
     def __init__(self):
         self.docterms= dict()
+        self.queryterms= dict()
+        self.querysim= dict()
         self.stopwords= self.get_stopwords()
 
     def vectorial_model(self, query:str, documents:list):
