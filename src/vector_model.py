@@ -71,7 +71,7 @@ class VectorModel:
                         if max < self.docterms[term][doc]['freq']:
                             max= self.docterms[term][doc]['freq']
             self.tf(doc, terms, max)
-        self.idf()
+        self.idf(len(documents))
         self.w()
             
         return self.docterms
@@ -85,10 +85,10 @@ class VectorModel:
                 self.docterms[term][doc]['freq'] = 0
 
     #TODO: log(0) error
-    def idf(self):
+    def idf(self, docslen):
         for term in self.docterms:
             for doc in self.docterms[term]:
-                self.docterms[term][doc]['idf'] = round(log(len(self.docterms)/len(self.docterms[term])), 3)
+                self.docterms[term][doc]['idf'] = round( ( log(docslen / len(self.docterms[term]) ) ), 3)
     
     def w(self):
         for term in self.docterms:
