@@ -140,7 +140,8 @@ class VectorModel:
 
 
 a = VectorModel()
-a.vectorial_model('pollo casa nodo', documentslist)
+rank= a.vectorial_model(' ajo mano  Perro CaSa   pilar DadO dado', documentslist)
 print(a.docterms)
 print(a.queryterms)
 print(a.querysim)
+print(rank)
