@@ -17,9 +17,11 @@ class VectorModel:
         self.querysim= dict()
         self.stopwords= self.get_stopwords()
 
+
     def vectorial_model(self, query:str, documents:list):
-        docs_freq= self.get_docs_terms_frequency(documents)
-        print(docs_freq)
+        self.docterms_data(documents)
+        self.query_data(query)
+        self.sim()
         
     
     def sim(self):
@@ -55,9 +57,14 @@ class VectorModel:
                     self.queryterms[term] = 0
         return self.queryterms
             
+
+        
+
+    def docterms_data(self, documents:list):
         """
         :param documents: list of documents
-        :return: dictionary with terms and their frequency in each document
+        :docterms: empty dictionary to store terms and their frequency, tf, idf and w
+        :return: dictionary with terms and their frequency, tf, idf and w
         """
         for doc in documents:
             data= self.get_doc_data(doc)
@@ -81,7 +88,6 @@ class VectorModel:
             self.tf(doc, terms, max)
         self.idf(len(documents))
         self.w()
-            
         return self.docterms
 
 
@@ -130,3 +136,6 @@ class VectorModel:
 
 a = VectorModel()
 a.vectorial_model('pollo casa nodo', documentslist)
+print(a.docterms)
+print(a.queryterms)
+print(a.querysim)
