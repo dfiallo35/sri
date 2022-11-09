@@ -28,9 +28,9 @@ class VectorModel:
         for term in self.queryterms:
             for doc in self.docterms[term]:
                 if self.querysim.get(doc) == None:
-                    self.querysim[term] = self.queryterms[term] * self.docterms[term][doc]['w']
+                    self.querysim[doc] = round(self.queryterms[term] * self.docterms[term][doc]['w'], 3)
                 else:
-                    self.querysim[term] = self.querysim[term] + self.queryterms[term] * self.docterms[term][doc]['w']
+                    self.querysim[doc] = round(self.querysim[doc] + self.queryterms[term] * self.docterms[term][doc]['w'], 3)
 
 
     def query_data(self, query:str, alpha:int=0):
