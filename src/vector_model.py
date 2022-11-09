@@ -21,6 +21,14 @@ class VectorModel:
         docs_freq= self.get_docs_terms_frequency(documents)
         print(docs_freq)
         
+    
+    def sim(self):
+        for term in self.queryterms:
+            for doc in self.docterms[term]:
+                if self.querysim.get(doc) == None:
+                    self.querysim[term] = self.queryterms[term] * self.docterms[term][doc]['w']
+                else:
+                    self.querysim[term] = self.querysim[term] + self.queryterms[term] * self.docterms[term][doc]['w']
 
 
     def query_data(self, query:str, alpha:int=0):
