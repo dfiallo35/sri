@@ -22,7 +22,31 @@ class VectorModel:
         print(docs_freq)
         
 
-    def get_docs_terms_frequency(self, documents:list):
+
+    def query_data(self, query:str, alpha:int=0):
+        """
+        :param query: query to search
+        :param queryterms: empty dictionary to store terms and their weight
+        :param alpha: parameter to calculate w
+        :return: dictionary with the query terms and their weight
+        """
+        terms= self.get_split_terms(query)
+        terms_set= set(terms)
+        for term in terms_set:
+            if term in self.docterms:
+                max_freq=0
+                idf= 0
+                for freq in self.docterms[term].values():
+                    idf= freq['idf']
+                    if max_freq < freq['freq']:
+                        max_freq= freq['freq']
+                
+                if max_freq != 0:
+                    self.queryterms[term] = round((alpha + (1 - alpha) * ((terms.count(term))/(max_freq)))*idf, 3)
+                else:
+                    self.queryterms[term] = 0
+        return self.queryterms
+            
         """
         :param documents: list of documents
         :return: dictionary with terms and their frequency in each document
