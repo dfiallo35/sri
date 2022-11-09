@@ -22,7 +22,10 @@ class VectorModel:
         self.docterms_data(documents)
         self.query_data(query)
         self.sim()
-        
+        return self.ranking()
+    
+    def ranking(self):
+        return sorted(self.querysim.items(), key=lambda x: x[1], reverse=True)
     
     def sim(self):
         for term in self.queryterms:
