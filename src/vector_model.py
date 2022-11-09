@@ -12,24 +12,52 @@ from math import log
 #TODO: visual
 class VectorModel:
     def __init__(self):
+        """
+        :param stopwords: list of stopwords
+        :param docterms: dictionary with terms and their frequency, tf, idf and w
+        :param queryterms: dictionary with query terms and their weight
+        :param querysim: dictionary with documents and their similarity
+        """
         self.docterms= dict()
         self.queryterms= dict()
         self.querysim= dict()
         self.stopwords= self.__get_stopwords()
 
     def find(self, query:str, documents:list):
+        """
+        :param query: query to search
+        :param documents: list of documents
+        :return: list of documents sorted by similarity
+        """
         self.__vectorial_model(query, documents)
 
     def __vectorial_model(self, query:str, documents:list):
+        """
+        :param query: query to search
+        :param documents: list of documents
+        :param docterms: dictionary with terms and their frequency, tf, idf and w
+        :param queryterms: dictionary with query terms and their weight
+        :param querysim: dictionary with documents and their similarity
+        :return: list of documents sorted by similarity
+        """
         self.__docterms_data(documents)
         self.__query_data(query.lower())
         self.__sim()
         return self.__ranking()
     
     def __ranking(self):
+        """
+        :param querysim: dictionary with documents and their similarity
+        :return: list of documents sorted by similarity
+        """
         return sorted(self.querysim.items(), key=lambda x: x[1], reverse=True)
     
     def __sim(self):
+        """
+        :param queryterms: dictionary with query terms and their weight
+        :param docterms: dictionary with terms and their frequency, tf, idf and w
+        :param querysim: empty dictionary to store documents and their similarity
+        :return: dictionary with documents and their similarity"""
         for term in self.queryterms:
             for doc in self.docterms[term]:
                 if self.querysim.get(doc) == None:
@@ -97,6 +125,12 @@ class VectorModel:
 
 
     def __tf(self, doc:str, terms:list, max:int):
+        """
+        :param doc: document to calculate tf
+        :param terms: terms of the document
+        :param max: max frequency of the document
+        :return: tf of the document
+        """
         for term in terms:
             if max != 0:
                 self.docterms[term][doc]['tf'] = round(self.docterms[term][doc]['freq']/max, 3)
@@ -105,11 +139,19 @@ class VectorModel:
 
     #TODO: log(0) error
     def __idf(self, docslen):
+        """
+        :param docslen: number of documents
+        :return: idf of the term
+        """
         for term in self.docterms:
             for doc in self.docterms[term]:
                 self.docterms[term][doc]['idf'] = round( ( log(docslen / len(self.docterms[term]) ) ), 3)
     
     def __w(self):
+        """
+        :param docterms: dictionary with terms and their frequency, tf, idf and w
+        :return: dictionary with terms and their frequency, tf, idf and w
+        """
         for term in self.docterms:
             for doc in self.docterms[term]:
                 self.docterms[term][doc]['w'] = round(self.docterms[term][doc]['tf'] * self.docterms[term][doc]['idf'], 3)
@@ -117,22 +159,37 @@ class VectorModel:
 
 
     def __get_not_stopwords_terms(self, terms:list):
+        """
+        :param terms: list of terms
+        :return: list of terms without stopwords
+        """
         for term in terms:
             if term in self.stopwords:
                 terms.remove(term)
         return terms
 
     def __get_doc_data(self, document:str):
+        """
+        :param document: document to get data
+        :return: data of the document
+        """
         doc= open(document, 'r')
         docdata=doc.read()
         doc.close()
         return docdata.lower()
 
     def __get_split_terms(self, document:str):
+        """
+        :param document: document to split
+        :return: list of terms
+        """
         doc= re.findall(r'\w+', document)
         return self.__get_not_stopwords_terms(doc)
 
     def __get_stopwords(self):
+        """
+        :return: list of stopwords
+        """
         stopwords_doc = open(join(getcwd(), 'data\\spanish_stopwords.txt'), 'r')
         stopwords_data = stopwords_doc.read()
         stopwords_doc.close()
