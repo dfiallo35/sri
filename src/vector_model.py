@@ -10,6 +10,8 @@ documentslist= [join(getcwd(), join('docs', 'a.txt')),
         ]
 
 
+#TODO: get data set
+#TODO: ranking limit
 class VectorModel:
     def __init__(self):
         self.docterms= dict()
