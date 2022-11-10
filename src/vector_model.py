@@ -58,12 +58,20 @@ class VectorModel:
         :param docterms: dictionary with terms and their frequency, tf, idf and w
         :param querysim: empty dictionary to store documents and their similarity
         :return: dictionary with documents and their similarity"""
+
+        sim= dict()
         for term in self.queryterms:
             for doc in self.docterms[term]:
-                if self.querysim.get(doc) == None:
-                    self.querysim[doc] = round(self.queryterms[term] * self.docterms[term][doc]['w'], 3)
+                if sim.get(doc) == None:
+                    sim[doc]= {'wiq2': pow(self.queryterms[term], 2), 'wij2': pow(self.docterms[term][doc]['w'], 2), 'wiq': self.queryterms[term], 'wij': self.docterms[term][doc]['w']}
                 else:
-                    self.querysim[doc] = round(self.querysim[doc] + self.queryterms[term] * self.docterms[term][doc]['w'], 3)
+                    sim[doc]['wiq2'] += pow(self.queryterms[term], 2)
+                    sim[doc]['wij2'] += pow(self.docterms[term][doc]['w'], 2)
+                    sim[doc]['wiq'] += self.queryterms[term]
+                    sim[doc]['wij'] += self.docterms[term][doc]['w']
+        for doc in sim:
+            self.querysim[doc] = round( (sim[doc]['wiq'] * sim[doc]['wij']) / ( pow(sim[doc]['wiq2'], 1/2) * pow(sim[doc]['wij2'], 1/2) ), 3 )
+
 
 
     def __query_data(self, query:str, alpha:int=0):
