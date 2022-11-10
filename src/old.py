@@ -162,3 +162,35 @@ def get_ranking(similarity, documents):
         
     
 
+
+
+
+
+
+
+# def docs_terms(self, documents:list):
+    #     docslen= len(documents)
+    #     for doc in documents:
+    #         data= self.get_doc_data(doc)
+    #         terms= self.get_split_terms(data)
+    #         max= 0
+    #         for term in terms:
+    #             if self.allterms.get(term) == None:
+    #                 self.allterms[term] = [doc]
+    #             else:
+    #                 self.allterms[term] = self.allterms[term] + 1
+
+    #             if self.docterms.get((term,doc)) == None:
+    #                 self.docterms[(term,doc)] = {'freq':1, 'tf':0, 'idf':0, 'w':0}
+    #                 if max < 1:
+    #                     max= 1
+    #             else:
+    #                 self.docterms[(term,doc)]['freq'] = self.docterms[(term,doc)]['freq'] + 1
+    #                 if max < self.docterms[(term,doc)]['freq']:
+    #                     max= self.docterms[(term,doc)]['freq']
+            
+    #         self.tf(doc, terms, max)
+        
+
+
+    #     return self.docterms
