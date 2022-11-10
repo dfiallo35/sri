@@ -81,24 +81,39 @@ class VectorModel:
         :param alpha: parameter to calculate w
         :return: dictionary with the query terms and their weight
         """
-        terms= self.__get_split_terms(query)
-        terms_set= set(terms)
-        for term in terms_set:
-            if term in self.docterms:
-                max_freq=0
-                idf= 0
-                for freq in self.docterms[term].values():
-                    idf= freq['idf']
-                    if max_freq < freq['freq']:
-                        max_freq= freq['freq']
-                
-                if max_freq != 0:
-                    self.queryterms[term] = round((alpha + (1 - alpha) * ((terms.count(term))/(max_freq)))*idf, 3)
-                else:
-                    self.queryterms[term] = 0
+        terms= self.__get_query_terms_docs(query)
+        terms_count= self.__get_terms_count(terms)
+        max= self.__get_max_count_query(terms_count)
+        
+        for term in terms_count:
+            idf= 0
+            for freq in self.docterms[term].values():
+                idf= freq['idf']
+            if max != 0:
+                self.queryterms[term] = round((alpha + (1 - alpha) * ((terms_count[term])/(max)))*idf, 3)
+            else:
+                self.queryterms[term] = 0
         return self.queryterms
-            
+    
+    def __get_max_count_query(self, count:dict):
+        max=0
+        for term in count:
+            if max < count[term]:
+                max = count[term]
+        return max
 
+    def __get_terms_count(self, terms:list):
+        count= dict()
+        for term in terms:
+            count[term]= terms.count(term)
+        return count
+
+    def __get_query_terms_docs(self, query:str):
+        terms= []
+        for term in self.__get_split_terms(query):
+            if self.docterms.get(term) != None:
+                terms.append(term)
+        return terms
         
 
     def __docterms_data(self, documents:list):
