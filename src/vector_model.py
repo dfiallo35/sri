@@ -1,6 +1,6 @@
 import re
-from os import getcwd
-from os.path import isfile, join
+from os import getcwd, listdir
+from os.path import isfile, join, isdir
 from math import log
 
 
@@ -29,7 +29,7 @@ class VectorModel:
         :param documents: list of documents
         :return: list of documents sorted by similarity
         """
-        self.__vectorial_model(query, documents)
+        return self.__vectorial_model(query, documents)
 
     def __vectorial_model(self, query:str, documents:list):
         """
