@@ -7,7 +7,6 @@ from math import log
 #TODO: get data set
 #TODO: make data sets
 #TODO: ranking limit
-#TODO: verify if the file exists
 #TODO: verify log(0) and division by zero
 #TODO: visual
 class VectorModel:
@@ -18,26 +17,36 @@ class VectorModel:
         :param queryterms: dictionary with query terms and their weight
         :param querysim: dictionary with documents and their similarity
         """
+
+        # dictionary with keys as terms and values as a dictionary with keys as documents and values as a dictionary with keys as freq, tf, idf and w
+        # {terms: {docs: {freq, tf, idf, w}}}
         self.docterms= dict()
+        # dictionary with keys as query terms and values as their weight
         self.queryterms= dict()
+        # dictionary with keys as documents and values as their similarity
         self.querysim= dict()
+        # dictionary of stopwords
         self.stopwords= self.__get_stopwords()
 
+    # TODO: verify if the file exists
+    # TODO: get data set
     def find(self, query:str, documents:list):
         """
+        Do the search of the query in the given documents
         :param query: query to search
         :param documents: list of documents
-        :return: list of documents sorted by similarity
+        :return: ranked list of documents
         """
         return self.__vectorial_model(query, documents)
 
     def __vectorial_model(self, query:str, documents:list):
         """
+        Execute the vectorial model
         :param query: query to search
         :param documents: list of documents
-        :param docterms: dictionary with terms and their frequency, tf, idf and w
-        :param queryterms: dictionary with query terms and their weight
-        :param querysim: dictionary with documents and their similarity
+        :get docterms: dictionary with terms and their frequency, tf, idf and w
+        :get queryterms: dictionary with query terms and their weight
+        :get querysim: dictionary with documents and their similarity
         :return: list of documents sorted by similarity
         """
         self.__docterms_data(documents)
@@ -45,18 +54,21 @@ class VectorModel:
         self.__sim()
         return self.__ranking()
     
+    # TODO: define restrictions
     def __ranking(self):
         """
-        :param querysim: dictionary with documents and their similarity
+        Sort the documents by similarity and return the list based on the restrictions
+        :get querysim: dictionary with documents and their similarity
         :return: list of documents sorted by similarity
         """
         return sorted(self.querysim.items(), key=lambda x: x[1], reverse=True)
     
     def __sim(self):
         """
-        :param queryterms: dictionary with query terms and their weight
-        :param docterms: dictionary with terms and their frequency, tf, idf and w
-        :param querysim: empty dictionary to store documents and their similarity
+        Calculate the similarity between the query and the documents and store it in the querysim dictionary
+        :get queryterms: dictionary with query terms and their weight
+        :get docterms: dictionary with terms and their frequency, tf, idf and w
+        :get querysim: empty dictionary to store documents and their similarity
         :return: dictionary with documents and their similarity"""
 
         sim= dict()
@@ -76,8 +88,9 @@ class VectorModel:
 
     def __query_data(self, query:str, alpha:int=0):
         """
+        Calculate the weight of the query terms and store it in the queryterms dictionary
         :param query: query to search
-        :param queryterms: empty dictionary to store terms and their weight
+        :get queryterms: empty dictionary to store terms and their weight
         :param alpha: parameter to calculate w
         :return: dictionary with the query terms and their weight
         """
@@ -96,6 +109,11 @@ class VectorModel:
         return self.queryterms
     
     def __get_max_count_query(self, count:dict):
+        """
+        Get the max frequency of the terms in the query
+        :param count: dictionary with terms and their frequency
+        :return: max frequency
+        """
         max=0
         for term in count:
             if max < count[term]:
@@ -103,12 +121,22 @@ class VectorModel:
         return max
 
     def __get_terms_count(self, terms:list):
+        """
+        Get the frequency of the terms in the query and store it in a dictionary of key as term and value as frequency
+        :param terms: list of terms
+        :return: dictionary with terms and their frequency
+        """
         count= dict()
         for term in terms:
             count[term]= terms.count(term)
         return count
 
     def __get_query_terms_docs(self, query:str):
+        """
+        Get the terms of the query and store it in a list
+        :param query: query to search
+        :return: list of terms
+        """
         terms= []
         for term in self.__get_split_terms(query):
             if self.docterms.get(term) != None:
@@ -118,8 +146,9 @@ class VectorModel:
 
     def __docterms_data(self, documents:list):
         """
+        Calculate the frequency, tf, idf and w of the terms in the documents and store it in the docterms dictionary
         :param documents: list of documents
-        :docterms: empty dictionary to store terms and their frequency, tf, idf and w
+        :get docterms: empty dictionary to store terms and their frequency, tf, idf and w
         :return: dictionary with terms and their frequency, tf, idf and w
         """
         for doc in documents:
@@ -141,18 +170,21 @@ class VectorModel:
                         self.docterms[term][doc]['freq'] = self.docterms[term][doc]['freq'] + 1
                         if max < self.docterms[term][doc]['freq']:
                             max= self.docterms[term][doc]['freq']
+
             self.__tf(doc, terms, max)
         self.__idf(len(documents))
         self.__w()
+
         return self.docterms
 
 
     def __tf(self, doc:str, terms:list, max:int):
         """
+        Calculate the tf of the terms in the documents and store it in the docterms dictionary
         :param doc: document to calculate tf
         :param terms: terms of the document
         :param max: max frequency of the document
-        :return: tf of the document
+        :get docterms: dictionary with terms and their frequency, tf, idf and w
         """
         for term in terms:
             if max != 0:
@@ -163,8 +195,9 @@ class VectorModel:
     #TODO: log(0) error
     def __idf(self, docslen):
         """
+        Calculate the idf of the terms in the documents and store it in the docterms dictionary
         :param docslen: number of documents
-        :return: idf of the term
+        :get docterms: dictionary with terms and their frequency, tf, idf and w
         """
         for term in self.docterms:
             for doc in self.docterms[term]:
@@ -172,8 +205,9 @@ class VectorModel:
     
     def __w(self):
         """
+        Calculate the w of the terms in the documents and store it in the docterms dictionary
         :param docterms: dictionary with terms and their frequency, tf, idf and w
-        :return: dictionary with terms and their frequency, tf, idf and w
+        :get docterms: dictionary with terms and their frequency, tf, idf and w
         """
         for term in self.docterms:
             for doc in self.docterms[term]:
@@ -183,6 +217,7 @@ class VectorModel:
 
     def __get_not_stopwords_terms(self, terms:list):
         """
+        Get the terms that are not stopwords
         :param terms: list of terms
         :return: list of terms without stopwords
         """
@@ -193,6 +228,7 @@ class VectorModel:
 
     def __get_doc_data(self, document:str):
         """
+        Get the data of the document
         :param document: document to get data
         :return: data of the document
         """
@@ -203,6 +239,7 @@ class VectorModel:
 
     def __get_split_terms(self, document:str):
         """
+        Get the terms of the document that are not stopwords and store it in a list
         :param document: document to split
         :return: list of terms
         """
@@ -211,6 +248,7 @@ class VectorModel:
 
     def __get_stopwords(self):
         """
+        Get the stopwords from the file and store it in a list
         :return: list of stopwords
         """
         stopwords_doc = open(join(getcwd(), 'data\\spanish_stopwords.txt'), 'r')
