@@ -79,6 +79,19 @@ class VectorModel:
         :return: list of documents sorted by similarity
         """
         return sorted(self.querysim.items(), key=lambda x: x[1], reverse=True)
+
+    def __umbral(self, rank:list, umbral:float):
+        """
+        Filter the documents by the similarity using the umbral
+        :param rank: list of documents sorted by similarity
+        :param umbral: similarity umbral
+        :return: list of documents that pass the umbral
+        """
+        newrank= []
+        for doc in rank:
+            if doc[1] >= umbral:
+                newrank.append(doc)
+        return newrank
     
     def __sim(self):
         """
