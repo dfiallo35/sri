@@ -7,6 +7,7 @@ from math import log
 #TODO: make data sets
 #TODO: verify log(0) and division by zero
 #TODO: visual
+# TODO: make documentation
 class VectorModel:
     def __init__(self):
         """
