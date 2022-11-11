@@ -40,6 +40,23 @@ class VectorModel:
         return self.__vectorial_model(query, documents)
 
     def __vectorial_model(self, query:str, documents:list):
+    def __get_docs(self, dir:str):
+        """
+        Get all the documents in the given directory
+        :param dir: directory to search
+        :return: list of documents
+        """
+        if isfile(dir):
+            return dir
+        if isdir(dir):
+            docslist= []
+            for doc in listdir(dir):
+                docslist.append(self.__get_docs(join(dir, doc)))
+            return docslist
+        else:
+            raise NotADirectoryError
+
+    def __vectorial_model(self, query:str, documents:list, alpha:float, sensitive:bool):
         """
         Execute the vectorial model
         :param query: query to search
