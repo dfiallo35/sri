@@ -4,9 +4,7 @@ from os.path import isfile, join, isdir
 from math import log
 
 
-#TODO: get data set
 #TODO: make data sets
-#TODO: ranking limit
 #TODO: verify log(0) and division by zero
 #TODO: visual
 class VectorModel:
@@ -28,18 +26,24 @@ class VectorModel:
         # dictionary of stopwords
         self.stopwords= self.__get_stopwords()
 
-    # TODO: verify if the file exists
-    # TODO: get data set
-    def find(self, query:str, documents:list):
+
+    def find(self, query:str, dataset:str, limit:int= None, umbral:float= None, alpha:float=0.5, sensitive:bool= False):
         """
         Do the search of the query in the given documents
         :param query: query to search
         :param documents: list of documents
         :return: ranked list of documents
         """
-        return self.__vectorial_model(query, documents)
+        documents= self.__get_docs(dataset)
+        rank= self.__vectorial_model(query, documents, alpha, sensitive)
+        
+        if umbral != None:
+            rank= self.__umbral(rank, umbral)
+        if limit != None:
+            rank= rank[:limit]
+        
+        return rank
 
-    def __vectorial_model(self, query:str, documents:list):
     def __get_docs(self, dir:str):
         """
         Get all the documents in the given directory
@@ -66,8 +70,11 @@ class VectorModel:
         :get querysim: dictionary with documents and their similarity
         :return: list of documents sorted by similarity
         """
-        self.__docterms_data(documents)
-        self.__query_data(query.lower())
+        self.__docterms_data(documents, sensitive)
+        if sensitive:
+            self.__query_data(query, alpha)
+        else:
+            self.__query_data(query.lower(), alpha)
         self.__sim()
         return self.__ranking()
     
@@ -116,7 +123,7 @@ class VectorModel:
 
 
 
-    def __query_data(self, query:str, alpha:int=0):
+    def __query_data(self, query:str, alpha:float):
         """
         Calculate the weight of the query terms and store it in the queryterms dictionary
         :param query: query to search
@@ -174,7 +181,7 @@ class VectorModel:
         return terms
         
 
-    def __docterms_data(self, documents:list):
+    def __docterms_data(self, documents:list, sensitive:bool):
         """
         Calculate the frequency, tf, idf and w of the terms in the documents and store it in the docterms dictionary
         :param documents: list of documents
@@ -182,7 +189,7 @@ class VectorModel:
         :return: dictionary with terms and their frequency, tf, idf and w
         """
         for doc in documents:
-            data= self.__get_doc_data(doc)
+            data= self.__get_doc_data(doc, sensitive)
             terms= self.__get_split_terms(data)
             max= 0
             for term in terms:
@@ -256,7 +263,7 @@ class VectorModel:
                 terms.remove(term)
         return terms
 
-    def __get_doc_data(self, document:str):
+    def __get_doc_data(self, document:str, sensitive:bool):
         """
         Get the data of the document
         :param document: document to get data
@@ -265,7 +272,9 @@ class VectorModel:
         doc= open(document, 'r')
         docdata=doc.read()
         doc.close()
-        return docdata.lower()
+        if not sensitive:
+            docdata= docdata.lower()
+        return docdata
 
     def __get_split_terms(self, document:str):
         """
