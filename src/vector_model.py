@@ -25,14 +25,28 @@ class VectorModel:
         self.queryterms= dict()
         # dictionary with keys as documents and values as their similarity
         self.querysim= dict()
+        # set of documents
+        self.documents= set()
         # dictionary of stopwords
         self.stopwords= self.__get_stopwords()
 
+        
 
-    def find(self, query:str, dataset:str, limit:int= None, umbral:float= None, alpha:float=0.5, sensitive:bool= False):
+
+    def run(self, query:str, dataset:str, limit:int= None, umbral:float= None, alpha:float=0.5, sensitive:bool= False):
         """
         Do the search of the query in the given documents
         :param query: query to search
+        :param dataset: directory to search
+        :param limit: limit of documents to return
+        :param umbral: similarity umbral
+        :param alpha: alpha value for the similarity calculation of the query
+        :param sensitive: if the query is case sensitive
+        :return: ranked list of documents
+        """
+        self.docs_data(dataset, sensitive)
+        return self.find(query, limit, umbral, alpha, sensitive)
+        
 
     def __compare_documents(self, documents:list):
         """
