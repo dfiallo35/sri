@@ -17,7 +17,6 @@ class VectorModel:
         :param queryterms: dictionary with query terms and their weight
         :param querysim: dictionary with documents and their similarity
         """
-
         # dictionary with keys as terms and values as a dictionary with keys as documents and values as a dictionary with keys as freq, tf, idf and w
         # {terms: {docs: {freq, tf, idf, w}}}
         self.docterms= dict()
@@ -198,7 +197,7 @@ class VectorModel:
             for freq in self.docterms[term].values():
                 idf= freq['idf']
             if max != 0:
-                self.queryterms[term] = round((alpha + (1 - alpha) * ((terms_count[term])/(max)))*idf, 3)
+                self.queryterms[term] = (alpha + (1 - alpha) * ((terms_count[term])/(max)))*idf
             else:
                 self.queryterms[term] = 0
         return self.queryterms
@@ -283,7 +282,7 @@ class VectorModel:
         """
         for term in terms:
             if max != 0:
-                self.docterms[term][doc]['tf'] = round(self.docterms[term][doc]['freq']/max, 3)
+                self.docterms[term][doc]['tf'] = self.docterms[term][doc]['freq']/max
             else:
                 self.docterms[term][doc]['freq'] = 0
 
@@ -296,7 +295,7 @@ class VectorModel:
         """
         for term in self.docterms:
             for doc in self.docterms[term]:
-                self.docterms[term][doc]['idf'] = round( ( log(docslen / len(self.docterms[term]) ) ), 3)
+                self.docterms[term][doc]['idf'] = log(docslen / len(self.docterms[term]))
     
     def __w(self):
         """
@@ -306,7 +305,7 @@ class VectorModel:
         """
         for term in self.docterms:
             for doc in self.docterms[term]:
-                self.docterms[term][doc]['w'] = round(self.docterms[term][doc]['tf'] * self.docterms[term][doc]['idf'], 3)
+                self.docterms[term][doc]['w'] = self.docterms[term][doc]['tf'] * self.docterms[term][doc]['idf']
 
 
 
