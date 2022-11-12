@@ -111,23 +111,7 @@ class VectorModel:
         else:
             raise NotADirectoryError
 
-    def __vectorial_model(self, query:str, documents:list, alpha:float, sensitive:bool):
-        """
-        Execute the vectorial model
-        :param query: query to search
-        :param documents: list of documents
-        :get docterms: dictionary with terms and their frequency, tf, idf and w
-        :get queryterms: dictionary with query terms and their weight
-        :get querysim: dictionary with documents and their similarity
-        :return: list of documents sorted by similarity
-        """
-        self.__docterms_data(documents, sensitive)
-        if sensitive:
-            self.__query_data(query, alpha)
-        else:
-            self.__query_data(query.lower(), alpha)
-        self.__sim()
-        return self.__ranking()
+    
     
     # TODO: define restrictions
     def __ranking(self):
