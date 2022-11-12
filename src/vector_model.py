@@ -56,7 +56,9 @@ class VectorModel:
         :return: ranked list of documents
         """
         documents= self.__get_docs(dataset)
-        rank= self.__vectorial_model(query, documents, alpha, sensitive)
+        if not self.__compare_documents(documents):
+            self.__add_docs_to_set(documents)
+            self.__docterms_data(documents, sensitive)
         
         if umbral != None:
             rank= self.__umbral(rank, umbral)
