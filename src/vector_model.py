@@ -97,14 +97,9 @@ class VectorModel:
         else:
             self.__query_data(query.lower(), alpha)
         self.__sim()
-        rank= self.__ranking()
+        rank= self.__ranking(limit, umbral)
 
         self.__clean_query_data()
-
-        if umbral != None:
-            rank= self.__umbral(rank, umbral)
-        if limit != None:
-            rank= rank[:limit]
         
         return rank
 
@@ -135,14 +130,18 @@ class VectorModel:
 
     
     
-    # TODO: define restrictions
-    def __ranking(self):
+    def __ranking(self, limit:int, umbral:float):
         """
         Sort the documents by similarity and return the list based on the restrictions
         :get querysim: dictionary with documents and their similarity
         :return: list of documents sorted by similarity
         """
-        return sorted(self.querysim.items(), key=lambda x: x[1], reverse=True)
+        rank= sorted(self.querysim.items(), key=lambda x: x[1], reverse=True)
+        if umbral != None:
+            rank= self.__umbral(rank, umbral)
+        if limit != None:
+            rank= rank[:limit]
+        return rank
 
     def __umbral(self, rank:list, umbral:float):
         """
