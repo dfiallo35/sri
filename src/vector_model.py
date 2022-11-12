@@ -33,7 +33,21 @@ class VectorModel:
         """
         Do the search of the query in the given documents
         :param query: query to search
+
+    def __compare_documents(self, documents:list):
+        """
+        Compare the documents with the set of documents
         :param documents: list of documents
+        :get documents: set of documents
+        :return: True if the documents are the same, False if not
+        """
+        newdocs= set(documents)
+        if self.documents == {}:
+            return False
+        if self.documents == newdocs:
+            return True
+        return False
+
         :return: ranked list of documents
         """
         documents= self.__get_docs(dataset)
