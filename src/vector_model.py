@@ -48,6 +48,11 @@ class VectorModel:
             return True
         return False
 
+    def docs_data(self, dataset:str, sensitive:bool= False):
+        """
+        Do the search of the query in the given documents
+        :param query: query to search
+        :param sensitive: if the query is case sensitive
         :return: ranked list of documents
         """
         documents= self.__get_docs(dataset)
