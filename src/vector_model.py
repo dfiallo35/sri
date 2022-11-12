@@ -60,12 +60,40 @@ class VectorModel:
             self.__add_docs_to_set(documents)
             self.__docterms_data(documents, sensitive)
         
+
+    def find(self, query:str, limit:int= None, umbral:float= None, alpha:float=0.5, sensitive:bool= False):
+        """
+        :param query: query to search
+        :param documents: list of documents
+        :get docterms: dictionary with terms and their frequency, tf, idf and w
+        :get queryterms: dictionary with query terms and their weight
+        :get querysim: dictionary with documents and their similarity
+        :return: list of documents sorted by similarity
+        """
+        if sensitive:
+            self.__query_data(query, alpha)
+        else:
+            self.__query_data(query.lower(), alpha)
+        self.__sim()
+        rank= self.__ranking()
+
+        self.__clean_query_data()
+
         if umbral != None:
             rank= self.__umbral(rank, umbral)
         if limit != None:
             rank= rank[:limit]
         
         return rank
+
+    def __clean_query_data(self):
+        """
+        Clean the query data
+        :get queryterms: empty dictionary to store query terms and their weight
+        :get querysim: empty dictionary to store documents and their similarity
+        """
+        self.queryterms= dict()
+        self.querysim= dict()
 
     def __get_docs(self, dir:str):
         """
