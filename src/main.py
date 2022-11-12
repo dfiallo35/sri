@@ -8,7 +8,7 @@ documentslist= [join(getcwd(), join('docs', 'a.txt')),
 
 
 a = VectorModel()
-rank= a.find(' ajo de a ojo carro  mano  Perro CaSa  un  pilar DadO dado peso pollo yuca ', documentslist)
-print(a.queryterms)
-print(a.querysim)
+rank= a.run('pollo Pollo mesa  casa carro y de dedo mole masa perro mayonesa ', join(getcwd(), 'docs'), alpha=0.2)
 print(rank)
+
+
