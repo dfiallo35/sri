@@ -61,6 +61,15 @@ class VectorModel:
             self.__docterms_data(documents, sensitive)
         
 
+    def __add_docs_to_set(self, documents:list):
+        """
+        Add the documents to the set of documents
+        :param documents: list of documents
+        :get documents: set of documents
+        """
+        for doc in documents:
+            self.documents.add(doc)
+
     def find(self, query:str, limit:int= None, umbral:float= None, alpha:float=0.5, sensitive:bool= False):
         """
         :param query: query to search
