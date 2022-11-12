@@ -7,7 +7,8 @@ from math import log
 #TODO: make data sets
 #TODO: verify log(0) and division by zero
 #TODO: visual
-# TODO: make documentation
+#TODO: make documentation
+#TODO: First process and save the document data, then just fetch the query
 class VectorModel:
     def __init__(self):
         """
