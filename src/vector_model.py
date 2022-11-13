@@ -5,7 +5,6 @@ from math import log
 
 
 #TODO: make data sets
-#TODO: verify log(0) and division by zero
 #TODO: visual
 #TODO: make documentation
 #TODO: First process and save the document data, then just fetch the query
@@ -43,6 +42,7 @@ class VectorModel:
         :param sensitive: if the query is case sensitive
         :return: ranked list of documents
         """
+        self.__clean_query_data()
         self.docs_data(dataset, sensitive)
         return self.find(query, limit, umbral, alpha, sensitive)
         
@@ -71,7 +71,7 @@ class VectorModel:
         documents= self.__get_docs(dataset)
         if not self.__compare_documents(documents):
             self.__add_docs_to_set(documents)
-            self.__docterms_data(documents, sensitive)
+            self.__docterms_data(sensitive)
         
 
     def __add_docs_to_set(self, documents:list):
@@ -98,8 +98,6 @@ class VectorModel:
             self.__query_data(query.lower(), alpha)
         self.__sim()
         rank= self.__ranking(limit, umbral)
-
-        self.__clean_query_data()
         
         return rank
 
@@ -109,8 +107,8 @@ class VectorModel:
         :get queryterms: empty dictionary to store query terms and their weight
         :get querysim: empty dictionary to store documents and their similarity
         """
-        self.queryterms= dict()
-        self.querysim= dict()
+        self.queryterms.clear()
+        self.querysim.clear()
 
     def __get_docs(self, dir:str):
         """
@@ -168,14 +166,14 @@ class VectorModel:
         for term in self.queryterms:
             for doc in self.docterms[term]:
                 if sim.get(doc) == None:
-                    sim[doc]= {'wiq2': pow(self.queryterms[term], 2), 'wij2': pow(self.docterms[term][doc]['w'], 2), 'wiq': self.queryterms[term], 'wij': self.docterms[term][doc]['w']}
+                    sim[doc]= {'wiq2': pow(self.queryterms[term], 2), 'wij2': pow(self.docterms[term][doc]['w'], 2), 'wijxwiq': self.queryterms[term] * self.docterms[term][doc]['w']}
                 else:
                     sim[doc]['wiq2'] += pow(self.queryterms[term], 2)
                     sim[doc]['wij2'] += pow(self.docterms[term][doc]['w'], 2)
-                    sim[doc]['wiq'] += self.queryterms[term]
-                    sim[doc]['wij'] += self.docterms[term][doc]['w']
+                    sim[doc]['wijxwiq'] += self.queryterms[term] * self.docterms[term][doc]['w']
+
         for doc in sim:
-            self.querysim[doc] = round( (sim[doc]['wiq'] * sim[doc]['wij']) / ( pow(sim[doc]['wiq2'], 1/2) * pow(sim[doc]['wij2'], 1/2) ), 3 )
+            self.querysim[doc] = round(sim[doc]['wijxwiq'] / ( pow(sim[doc]['wiq2'], 1/2) * pow(sim[doc]['wij2'], 1/2) ), 3)
 
 
 
@@ -188,8 +186,8 @@ class VectorModel:
         :return: dictionary with the query terms and their weight
         """
         terms= self.__get_query_terms_docs(query)
-        terms_count= self.__get_terms_count(terms)
-        max= self.__get_max_count_query(terms_count)
+        terms_count= self.__get_count(terms)
+        max= self.__get_max_count(terms_count)
         
         for term in terms_count:
             idf= 0
@@ -201,7 +199,7 @@ class VectorModel:
                 self.queryterms[term] = 0
         return self.queryterms
     
-    def __get_max_count_query(self, count:dict):
+    def __get_max_count(self, count:dict):
         """
         Get the max frequency of the terms in the query
         :param count: dictionary with terms and their frequency
@@ -213,15 +211,15 @@ class VectorModel:
                 max = count[term]
         return max
 
-    def __get_terms_count(self, terms:list):
+    def __get_count(self, elements:list):
         """
         Get the frequency of the terms in the query and store it in a dictionary of key as term and value as frequency
         :param terms: list of terms
         :return: dictionary with terms and their frequency
         """
         count= dict()
-        for term in terms:
-            count[term]= terms.count(term)
+        for element in elements:
+            count[element]= elements.count(element)
         return count
 
     def __get_query_terms_docs(self, query:str):
@@ -237,76 +235,30 @@ class VectorModel:
         return terms
         
 
-    def __docterms_data(self, documents:list, sensitive:bool):
+
+    def __docterms_data(self, sensitive:bool):
         """
         Calculate the frequency, tf, idf and w of the terms in the documents and store it in the docterms dictionary
         :param documents: list of documents
         :get docterms: empty dictionary to store terms and their frequency, tf, idf and w
-        :return: dictionary with terms and their frequency, tf, idf and w
+        :param sensitive: boolean to know if the search is sensitive or not
         """
-        for doc in documents:
-            data= self.__get_doc_data(doc, sensitive)
-            terms= self.__get_split_terms(data)
-            max= 0
-            for term in terms:
+        for doc in self.documents:
+            terms_freq= self.__get_count(self.__get_split_terms(self.__get_doc_data(doc, sensitive)))
+            max= self.__get_max_count(terms_freq)
+            
+            for term in terms_freq:
                 if self.docterms.get(term) == None:
-                    self.docterms[term] = {doc:{'freq':1, 'tf':0, 'idf':0, 'w':0}}
-                    if max < 1:
-                        max= 1
-                    
+                    self.docterms[term] = {doc:{'freq':terms_freq[term], 'tf':terms_freq[term]/max, 'idf':0, 'w':0}}
                 else:
-                    if self.docterms.get(term).get(doc) == None:
-                        self.docterms[term][doc] = {'freq':1, 'tf':0, 'idf':0, 'w':0}
-                        if max < 1:
-                            max= 1
-                    else:
-                        self.docterms[term][doc]['freq'] = self.docterms[term][doc]['freq'] + 1
-                        if max < self.docterms[term][doc]['freq']:
-                            max= self.docterms[term][doc]['freq']
-
-            self.__tf(doc, terms, max)
-        self.__idf(len(documents))
-        self.__w()
-
-        return self.docterms
-
-
-    def __tf(self, doc:str, terms:list, max:int):
-        """
-        Calculate the tf of the terms in the documents and store it in the docterms dictionary
-        :param doc: document to calculate tf
-        :param terms: terms of the document
-        :param max: max frequency of the document
-        :get docterms: dictionary with terms and their frequency, tf, idf and w
-        """
-        for term in terms:
-            if max != 0:
-                self.docterms[term][doc]['tf'] = self.docterms[term][doc]['freq']/max
-            else:
-                self.docterms[term][doc]['freq'] = 0
-
-    #TODO: log(0) error
-    def __idf(self, docslen):
-        """
-        Calculate the idf of the terms in the documents and store it in the docterms dictionary
-        :param docslen: number of documents
-        :get docterms: dictionary with terms and their frequency, tf, idf and w
-        """
+                    self.docterms[term][doc] = {'freq':terms_freq[term], 'tf':terms_freq[term]/max, 'idf':0, 'w':0}
+            
+        docslen= len(self.documents)
         for term in self.docterms:
             for doc in self.docterms[term]:
-                self.docterms[term][doc]['idf'] = log(docslen / len(self.docterms[term]))
-    
-    def __w(self):
-        """
-        Calculate the w of the terms in the documents and store it in the docterms dictionary
-        :param docterms: dictionary with terms and their frequency, tf, idf and w
-        :get docterms: dictionary with terms and their frequency, tf, idf and w
-        """
-        for term in self.docterms:
-            for doc in self.docterms[term]:
+                self.docterms[term][doc]['idf'] = log(docslen / len(self.docterms[term]), 10)
                 self.docterms[term][doc]['w'] = self.docterms[term][doc]['tf'] * self.docterms[term][doc]['idf']
-
-
+        
 
     def __get_not_stopwords_terms(self, terms:list):
         """
