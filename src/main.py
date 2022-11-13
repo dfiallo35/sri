@@ -8,7 +8,4 @@ documentslist= [join(getcwd(), join('docs', 'a.txt')),
 
 
 a = VectorModel()
-rank= a.run('pollo Pollo mesa  casa carro y de dedo mole masa perro mayonesa ', join(getcwd(), 'docs'), alpha=0.2)
-print(rank)
-
-
+print(a.run('leon oso nutria perro es de la casa del zorro', join(getcwd(), 'docs\\1')))
