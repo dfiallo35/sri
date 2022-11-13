@@ -194,3 +194,57 @@ def get_ranking(similarity, documents):
 
 
     #     return self.docterms
+
+
+
+
+
+
+
+
+def __docterms_data(self, sensitive:bool):
+    """
+    Calculate the frequency, tf, idf and w of the terms in the documents and store it in the docterms dictionary
+    :param documents: list of documents
+    :get docterms: empty dictionary to store terms and their frequency, tf, idf and w
+    :return: dictionary with terms and their frequency, tf, idf and w
+    """
+    print('A')
+    for doc in self.documents:
+        data= self.__get_doc_data(doc, sensitive)
+        terms= self.__get_split_terms(data)
+        max= 0
+        for term in terms:
+            if self.docterms.get(term) == None:
+                self.docterms[term] = {doc:{'freq':1, 'tf':0, 'idf':0, 'w':0}}
+                if max < 1:
+                    max= 1
+                
+            else:
+                if self.docterms.get(term).get(doc) == None:
+                    self.docterms[term][doc] = {'freq':1, 'tf':0, 'idf':0, 'w':0}
+                    if max < 1:
+                        max= 1
+                else:
+                    self.docterms[term][doc]['freq'] = self.docterms[term][doc]['freq'] + 1
+                    if max < self.docterms[term][doc]['freq']:
+                        max= self.docterms[term][doc]['freq']
+
+        self.__tf(doc, terms, max)
+    self.__idf()
+    self.__w()
+
+
+def __tf(self, doc:str, terms:list, max:int):
+    """
+    Calculate the tf of the terms in the documents and store it in the docterms dictionary
+    :param doc: document to calculate tf
+    :param terms: terms of the document
+    :param max: max frequency of the document
+    :get docterms: dictionary with terms and their frequency, tf, idf and w
+    """
+    for term in terms:
+        if max != 0:
+            self.docterms[term][doc]['tf'] = self.docterms[term][doc]['freq']/max
+        else:
+            self.docterms[term][doc]['freq'] = 0
