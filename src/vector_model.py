@@ -134,6 +134,12 @@ class VectorModel:
         :get querysim: dictionary with documents and their similarity
         :return: list of documents sorted by similarity
         """
+        new_querysim= dict()
+        for doc in self.querysim:
+            if self.querysim[doc] != 0:
+                new_querysim[doc]= self.querysim[doc]
+        self.querysim= new_querysim
+
         rank= sorted(self.querysim.items(), key=lambda x: x[1], reverse=True)
         if umbral != None:
             rank= self.__umbral(rank, umbral)
@@ -163,17 +169,26 @@ class VectorModel:
         :return: dictionary with documents and their similarity"""
 
         sim= dict()
-        for term in self.queryterms:
+        aux= dict()
+        for term in self.docterms:
+            if term in self.queryterms:
+                aux[term]= self.queryterms[term]
+            else:
+                aux[term]= 0
+
+        for term in aux:
             for doc in self.docterms[term]:
                 if sim.get(doc) == None:
-                    sim[doc]= {'wiq2': pow(self.queryterms[term], 2), 'wij2': pow(self.docterms[term][doc]['w'], 2), 'wijxwiq': self.queryterms[term] * self.docterms[term][doc]['w']}
+                    sim[doc]= {'wiq2': pow(aux[term], 2), 'wij2': pow(self.docterms[term][doc]['w'], 2), 'wijxwiq': aux[term] * self.docterms[term][doc]['w']}
                 else:
-                    sim[doc]['wiq2'] += pow(self.queryterms[term], 2)
+                    sim[doc]['wiq2'] += pow(aux[term], 2)
                     sim[doc]['wij2'] += pow(self.docterms[term][doc]['w'], 2)
-                    sim[doc]['wijxwiq'] += self.queryterms[term] * self.docterms[term][doc]['w']
-
+                    sim[doc]['wijxwiq'] += aux[term] * self.docterms[term][doc]['w']
         for doc in sim:
-            self.querysim[doc] = round(sim[doc]['wijxwiq'] / ( pow(sim[doc]['wiq2'], 1/2) * pow(sim[doc]['wij2'], 1/2) ), 3)
+            if pow(sim[doc]['wiq2'], 1/2) * pow(sim[doc]['wij2'], 1/2) != 0:
+                self.querysim[doc] = round(sim[doc]['wijxwiq'] / ( pow(sim[doc]['wiq2'], 1/2) * pow(sim[doc]['wij2'], 1/2) ), 3)
+            else:
+                self.querysim[doc]= 0
 
 
 
