@@ -248,3 +248,33 @@ def __tf(self, doc:str, terms:list, max:int):
             self.docterms[term][doc]['tf'] = self.docterms[term][doc]['freq']/max
         else:
             self.docterms[term][doc]['freq'] = 0
+
+
+def __get_docs(self, dir:str):
+        """
+        Get all the documents in the given directory
+        :param dir: directory to search
+        :return: list of documents
+        """
+        if isfile(dir):
+            return dir
+        if isdir(dir):
+            docslist= []
+            for doc in listdir(dir):
+                docslist.append(self.__get_docs(join(dir, doc)))
+            return docslist
+        else:
+            raise NotADirectoryError
+
+def __get_doc_data(self, document:str, sensitive:bool):
+        """
+        Get the data of the document
+        :param document: document to get data
+        :return: data of the document
+        """
+        doc= open(document, 'r')
+        docdata=doc.read()
+        doc.close()
+        if not sensitive:
+            docdata= docdata.lower()
+        return docdata
