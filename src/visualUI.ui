@@ -69,7 +69,7 @@
      </rect>
     </property>
     <property name="text">
-     <string>Sistema de Recuperación de Información</string>
+     <string>Information Retrieval System</string>
     </property>
    </widget>
    <widget class="QLabel" name="label_2">
@@ -88,8 +88,8 @@
    <widget class="QSpinBox" name="lim">
     <property name="geometry">
      <rect>
-      <x>380</x>
-      <y>30</y>
+      <x>630</x>
+      <y>40</y>
       <width>42</width>
       <height>22</height>
      </rect>
@@ -104,8 +104,8 @@
    <widget class="QDoubleSpinBox" name="umbral">
     <property name="geometry">
      <rect>
-      <x>380</x>
-      <y>60</y>
+      <x>630</x>
+      <y>70</y>
       <width>62</width>
       <height>22</height>
      </rect>
@@ -120,22 +120,22 @@
    <widget class="QLabel" name="label_3">
     <property name="geometry">
      <rect>
-      <x>310</x>
-      <y>30</y>
+      <x>560</x>
+      <y>40</y>
       <width>31</width>
       <height>16</height>
      </rect>
     </property>
     <property name="text">
-     <string>Limite</string>
+     <string>Limit</string>
     </property>
    </widget>
    <widget class="QLabel" name="label_4">
     <property name="geometry">
      <rect>
-      <x>310</x>
-      <y>60</y>
-      <width>31</width>
+      <x>560</x>
+      <y>70</y>
+      <width>41</width>
       <height>16</height>
      </rect>
     </property>
@@ -146,8 +146,8 @@
    <widget class="QCheckBox" name="limCheck">
     <property name="geometry">
      <rect>
-      <x>350</x>
-      <y>30</y>
+      <x>600</x>
+      <y>40</y>
       <width>16</width>
       <height>17</height>
      </rect>
@@ -159,8 +159,8 @@
    <widget class="QCheckBox" name="umbralCheck">
     <property name="geometry">
      <rect>
-      <x>350</x>
-      <y>60</y>
+      <x>600</x>
+      <y>70</y>
       <width>16</width>
       <height>17</height>
      </rect>
@@ -190,8 +190,8 @@
    <widget class="QLabel" name="label_5">
     <property name="geometry">
      <rect>
-      <x>310</x>
-      <y>90</y>
+      <x>560</x>
+      <y>100</y>
       <width>31</width>
       <height>16</height>
      </rect>
@@ -203,8 +203,8 @@
    <widget class="QCheckBox" name="alphaCheck">
     <property name="geometry">
      <rect>
-      <x>350</x>
-      <y>90</y>
+      <x>600</x>
+      <y>100</y>
       <width>16</width>
       <height>17</height>
      </rect>
@@ -216,21 +216,21 @@
    <widget class="QLabel" name="label_6">
     <property name="geometry">
      <rect>
-      <x>510</x>
-      <y>30</y>
-      <width>171</width>
+      <x>560</x>
+      <y>140</y>
+      <width>111</width>
       <height>16</height>
      </rect>
     </property>
     <property name="text">
-     <string>Busqueda sencible a mayusculas</string>
+     <string>Case sensitive search</string>
     </property>
    </widget>
    <widget class="QDoubleSpinBox" name="alpha">
     <property name="geometry">
      <rect>
-      <x>380</x>
-      <y>90</y>
+      <x>630</x>
+      <y>100</y>
       <width>62</width>
       <height>22</height>
      </rect>
@@ -246,7 +246,7 @@
     <property name="geometry">
      <rect>
       <x>680</x>
-      <y>30</y>
+      <y>140</y>
       <width>16</width>
       <height>17</height>
      </rect>

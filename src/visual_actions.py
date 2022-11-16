@@ -3,12 +3,16 @@ from PyQt5.QtWidgets import *
 import vector_model
 
 
-#         self.sri_type.addItem('Modelo Vectorial')
-#         self.dataset.addItem('Canfield')
+# self.sri_type.addItem('Modelo Vectorial')
+#         self.dataset.addItem('cranfield')
 
-# self.run.clicked.connect(lambda: click_search(self.query,
+#         vectormodel= vector_model.VectorModel()
+
+#         self.models= {'VectorModel':vectormodel}
+
+#         self.run.clicked.connect(lambda: click_search(self.query,
 #                                             self.sri_type,
-#                                             self.dataset_dir,
+#                                             self.dataset,
 #                                             self.umbral,
 #                                             self.umbralCheck,
 #                                             self.sensitive,
@@ -16,7 +20,8 @@ import vector_model
 #                                             self.alphaCheck,
 #                                             self.lim,
 #                                             self.limCheck,
-#                                             self.output))
+#                                             self.output,
+#                                             self.models))
 
 
 
