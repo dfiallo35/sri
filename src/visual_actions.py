@@ -1,7 +1,10 @@
 from PyQt5 import QtCore, QtGui, QtWidgets, Qt
 from PyQt5.QtWidgets import *
-from vector_model import *
+import vector_model
 
+
+#         self.sri_type.addItem('Modelo Vectorial')
+#         self.dataset.addItem('Canfield')
 
 # self.run.clicked.connect(lambda: click_search(self.query,
 #                                             self.sri_type,
@@ -19,7 +22,7 @@ from vector_model import *
 
 def click_search(query:QLineEdit,
                 sri_model:QComboBox,
-                dataset:QLineEdit,
+                dataset:QComboBox,
                 umbral:QDoubleSpinBox,
                 umbralCheck:QCheckBox,
                 sensitive:QCheckBox,
@@ -35,7 +38,9 @@ def click_search(query:QLineEdit,
     sensitive = get_sensitive(sensitive)
     alpha = get_alpha(alpha, alphaCheck)
     lim = get_lim(lim, limCheck)
-    model = VectorModel()
+
+    if sri_model == 'Modelo Vectorial':
+        model = vector_model.VectorModel()
     items= model.run(query=query, dataset=dataset, umbral=umbral, sensitive=sensitive, alpha=alpha, limit=lim)
     output.clear()
     for item in items:
@@ -66,8 +71,8 @@ def get_lim(lim:QSpinBox, limCheck:QCheckBox):
 def get_sri(sri_model:QComboBox):
     return sri_model.currentText()
 
-def get_dataset(dataset:QLineEdit):
-    return dataset.text()
+def get_dataset(dataset:QComboBox):
+    return dataset.currentText()
 
 def output():
     raise NotImplementedError
