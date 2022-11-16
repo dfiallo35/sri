@@ -72,16 +72,6 @@
      <string>Sistema de Recuperación de Información</string>
     </property>
    </widget>
-   <widget class="QLineEdit" name="dataset_dir">
-    <property name="geometry">
-     <rect>
-      <x>30</x>
-      <y>90</y>
-      <width>271</width>
-      <height>20</height>
-     </rect>
-    </property>
-   </widget>
    <widget class="QLabel" name="label_2">
     <property name="geometry">
      <rect>
@@ -92,14 +82,14 @@
      </rect>
     </property>
     <property name="text">
-     <string>DataSet dir</string>
+     <string>DataSet</string>
     </property>
    </widget>
    <widget class="QSpinBox" name="lim">
     <property name="geometry">
      <rect>
-      <x>630</x>
-      <y>40</y>
+      <x>380</x>
+      <y>30</y>
       <width>42</width>
       <height>22</height>
      </rect>
@@ -114,8 +104,8 @@
    <widget class="QDoubleSpinBox" name="umbral">
     <property name="geometry">
      <rect>
-      <x>630</x>
-      <y>70</y>
+      <x>380</x>
+      <y>60</y>
       <width>62</width>
       <height>22</height>
      </rect>
@@ -130,8 +120,8 @@
    <widget class="QLabel" name="label_3">
     <property name="geometry">
      <rect>
-      <x>560</x>
-      <y>40</y>
+      <x>310</x>
+      <y>30</y>
       <width>31</width>
       <height>16</height>
      </rect>
@@ -143,8 +133,8 @@
    <widget class="QLabel" name="label_4">
     <property name="geometry">
      <rect>
-      <x>560</x>
-      <y>70</y>
+      <x>310</x>
+      <y>60</y>
       <width>31</width>
       <height>16</height>
      </rect>
@@ -156,8 +146,8 @@
    <widget class="QCheckBox" name="limCheck">
     <property name="geometry">
      <rect>
-      <x>600</x>
-      <y>40</y>
+      <x>350</x>
+      <y>30</y>
       <width>16</width>
       <height>17</height>
      </rect>
@@ -169,27 +159,14 @@
    <widget class="QCheckBox" name="umbralCheck">
     <property name="geometry">
      <rect>
-      <x>600</x>
-      <y>70</y>
+      <x>350</x>
+      <y>60</y>
       <width>16</width>
       <height>17</height>
      </rect>
     </property>
     <property name="text">
      <string/>
-    </property>
-   </widget>
-   <widget class="QToolButton" name="toolButton_2">
-    <property name="geometry">
-     <rect>
-      <x>320</x>
-      <y>90</y>
-      <width>31</width>
-      <height>19</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>Find</string>
     </property>
    </widget>
    <widget class="QWidget" name="horizontalLayoutWidget">
@@ -213,8 +190,8 @@
    <widget class="QLabel" name="label_5">
     <property name="geometry">
      <rect>
-      <x>560</x>
-      <y>100</y>
+      <x>310</x>
+      <y>90</y>
       <width>31</width>
       <height>16</height>
      </rect>
@@ -226,8 +203,8 @@
    <widget class="QCheckBox" name="alphaCheck">
     <property name="geometry">
      <rect>
-      <x>600</x>
-      <y>100</y>
+      <x>350</x>
+      <y>90</y>
       <width>16</width>
       <height>17</height>
      </rect>
@@ -239,8 +216,8 @@
    <widget class="QLabel" name="label_6">
     <property name="geometry">
      <rect>
-      <x>320</x>
-      <y>40</y>
+      <x>510</x>
+      <y>30</y>
       <width>171</width>
       <height>16</height>
      </rect>
@@ -252,8 +229,8 @@
    <widget class="QDoubleSpinBox" name="alpha">
     <property name="geometry">
      <rect>
-      <x>630</x>
-      <y>100</y>
+      <x>380</x>
+      <y>90</y>
       <width>62</width>
       <height>22</height>
      </rect>
@@ -268,14 +245,24 @@
    <widget class="QCheckBox" name="sensitive">
     <property name="geometry">
      <rect>
-      <x>490</x>
-      <y>40</y>
+      <x>680</x>
+      <y>30</y>
       <width>16</width>
       <height>17</height>
      </rect>
     </property>
     <property name="text">
      <string/>
+    </property>
+   </widget>
+   <widget class="QComboBox" name="dataset">
+    <property name="geometry">
+     <rect>
+      <x>30</x>
+      <y>90</y>
+      <width>201</width>
+      <height>22</height>
+     </rect>
     </property>
    </widget>
   </widget>
