@@ -17,9 +17,5 @@ class Datasets:
     def get_docs_data(self):
         for data in self.dataset.docs_iter:
             data:CranfieldDoc= data
-            yield data.doc_id, data.text
-
-
-d= Datasets()
-a= [(1,2), (3,5), (2,7)]
+            yield {'id':data.doc_id, 'text':data.text}
 
