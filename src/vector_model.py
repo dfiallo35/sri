@@ -1,13 +1,14 @@
 import re
-from os import getcwd, listdir
-from os.path import isfile, join, isdir
-from math import log
+from utils import *
+from dataset import Datasets
+from stopwords import Stopwords
 
 
 #TODO: make data sets
-#TODO: visual
+#TODO: update visual
 #TODO: make documentation
 #TODO: First process and save the document data, then just fetch the query
+#TODO: reuse dataset
 class VectorModel:
     def __init__(self):
         """
@@ -23,10 +24,9 @@ class VectorModel:
         self.queryterms= dict()
         # dictionary with keys as documents and values as their similarity
         self.querysim= dict()
-        # set of documents
-        self.documents= set()
-        # dictionary of stopwords
-        self.stopwords= self.__get_stopwords()
+        # list of stopwords
+        self.stopwords= Stopwords('english')
+        self.dataset= Datasets()
 
         
 
@@ -45,8 +45,12 @@ class VectorModel:
         self.__clean_query_data()
         self.docs_data(dataset, sensitive)
         return self.find(query, limit, umbral, alpha, sensitive)
-        
+    
+    #TODO: working...
+    def dataset_data(self, dataset_name:str):
+        self.dataset.get_dataset(dataset_name)
 
+    #TODO: to dataset
     def __compare_documents(self, documents:list):
         """
         Compare the documents with the set of documents
@@ -55,12 +59,13 @@ class VectorModel:
         :return: True if the documents are the same, False if not
         """
         newdocs= set(documents)
-        if self.documents == {}:
+        if self.dataset.documents == {}:
             return False
-        if self.documents == newdocs:
+        if self.dataset.documents == newdocs:
             return True
         return False
 
+    #TODO: compare documents to reuse
     def docs_data(self, dataset:str, sensitive:bool= False):
         """
         Do the search of the query in the given documents
@@ -68,20 +73,8 @@ class VectorModel:
         :param sensitive: if the query is case sensitive
         :return: ranked list of documents
         """
-        documents= self.__get_docs(dataset)
-        if not self.__compare_documents(documents):
-            self.__add_docs_to_set(documents)
-            self.__docterms_data(sensitive)
-        
+        self.__docterms_data(sensitive)
 
-    def __add_docs_to_set(self, documents:list):
-        """
-        Add the documents to the set of documents
-        :param documents: list of documents
-        :get documents: set of documents
-        """
-        for doc in documents:
-            self.documents.add(doc)
 
     def find(self, query:str, limit:int= None, umbral:float= None, alpha:float=0.5, sensitive:bool= False):
         """
@@ -109,23 +102,6 @@ class VectorModel:
         """
         self.queryterms.clear()
         self.querysim.clear()
-
-    def __get_docs(self, dir:str):
-        """
-        Get all the documents in the given directory
-        :param dir: directory to search
-        :return: list of documents
-        """
-        if isfile(dir):
-            return dir
-        if isdir(dir):
-            docslist= []
-            for doc in listdir(dir):
-                docslist.append(self.__get_docs(join(dir, doc)))
-            return docslist
-        else:
-            raise NotADirectoryError
-
     
     
     def __ranking(self, limit:int, umbral:float):
@@ -258,7 +234,7 @@ class VectorModel:
         :get docterms: empty dictionary to store terms and their frequency, tf, idf and w
         :param sensitive: boolean to know if the search is sensitive or not
         """
-        for doc in self.documents:
+        for doc in self.dataset.get_docs_data():
             terms_freq= self.__get_count(self.__get_split_terms(self.__get_doc_data(doc, sensitive)))
             max= self.__get_max_count(terms_freq)
             
@@ -268,23 +244,11 @@ class VectorModel:
                 else:
                     self.docterms[term][doc] = {'freq':terms_freq[term], 'tf':terms_freq[term]/max, 'idf':0, 'w':0}
             
-        docslen= len(self.documents)
         for term in self.docterms:
             for doc in self.docterms[term]:
-                self.docterms[term][doc]['idf'] = log(docslen / len(self.docterms[term]), 10)
+                self.docterms[term][doc]['idf'] = log(self.dataset.docslen / len(self.docterms[term]), 10)
                 self.docterms[term][doc]['w'] = self.docterms[term][doc]['tf'] * self.docterms[term][doc]['idf']
         
-
-    def __get_not_stopwords_terms(self, terms:list):
-        """
-        Get the terms that are not stopwords
-        :param terms: list of terms
-        :return: list of terms without stopwords
-        """
-        for term in terms:
-            if term in self.stopwords:
-                terms.remove(term)
-        return terms
 
     def __get_doc_data(self, document:str, sensitive:bool):
         """
@@ -299,23 +263,12 @@ class VectorModel:
             docdata= docdata.lower()
         return docdata
 
+    #TODO: to utils
     def __get_split_terms(self, document:str):
         """
         Get the terms of the document that are not stopwords and store it in a list
         :param document: document to split
         :return: list of terms
         """
-        doc= re.findall(r'\w+', document)
-        return self.__get_not_stopwords_terms(doc)
-
-    def __get_stopwords(self):
-        """
-        Get the stopwords from the file and store it in a list
-        :return: list of stopwords
-        """
-        stopwords_doc = open(join(getcwd(), 'data\\spanish_stopwords.txt'), 'r')
-        stopwords_data = stopwords_doc.read()
-        stopwords_doc.close()
-        return re.findall(r'\w+', stopwords_data)
-
-
+        doc= split_words(document)
+        return self.stopwords.not_stopwords_terms(doc)
