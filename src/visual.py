@@ -98,6 +98,10 @@ class Ui_SRI(object):
         self.sri_type.addItem('Modelo Vectorial')
         self.dataset.addItem('cranfield')
 
+        vectormodel= vector_model.VectorModel()
+
+        self.models= {'VectorModel':vectormodel}
+
         self.run.clicked.connect(lambda: click_search(self.query,
                                             self.sri_type,
                                             self.dataset,
@@ -108,7 +112,8 @@ class Ui_SRI(object):
                                             self.alphaCheck,
                                             self.lim,
                                             self.limCheck,
-                                            self.output))
+                                            self.output,
+                                            self.models))
 
         self.retranslateUi(SRI)
         QtCore.QMetaObject.connectSlotsByName(SRI)

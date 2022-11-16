@@ -30,7 +30,8 @@ def click_search(query:QLineEdit,
                 alphaCheck:QCheckBox,
                 lim:QSpinBox,
                 limCheck:QCheckBox,
-                output:QListWidget):
+                output:QListWidget,
+                models:dict):
     query = get_query(query)
     sri_model = get_sri(sri_model)
     dataset = get_dataset(dataset)
@@ -38,13 +39,15 @@ def click_search(query:QLineEdit,
     sensitive = get_sensitive(sensitive)
     alpha = get_alpha(alpha, alphaCheck)
     lim = get_lim(lim, limCheck)
-
+    
+    
     if sri_model == 'Modelo Vectorial':
-        model = vector_model.VectorModel()
+        model = models['VectorModel']
+    
     items= model.run(query=query, dataset=dataset, umbral=umbral, sensitive=sensitive, alpha=alpha, limit=lim)
     output.clear()
     for item in items:
-        output.addItem('doc: ' +  str(item[0]) + '    ' + 'similarity: ' +str(item[1]))
+        output.addItem('doc: ' +  str(item[0]) + '            ' + 'similarity: ' +str(item[1]))
 
 
 def get_query(query:QLineEdit):
