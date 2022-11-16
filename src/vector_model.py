@@ -1,4 +1,3 @@
-import re
 from utils import *
 from dataset import Datasets
 from stopwords import Stopwords
