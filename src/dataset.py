@@ -7,8 +7,10 @@ class Datasets:
         self.dataset:CranfieldDocs= None
         self.documents= set()
         self.docslen= 0
+        self.dataset_name= None
 
     def get_dataset(self, dataset:str):
+        self.dataset_name= dataset
         self.dataset:CranfieldDocs = ir_datasets.load(dataset)
         for doc in self.dataset.docs_iter():
             self.documents.add(doc.doc_id)
