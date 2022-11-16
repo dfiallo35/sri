@@ -167,7 +167,6 @@ class VectorModel:
                 self.querysim[doc]= 0
 
 
-
     def __query_data(self, query:str, alpha:float):
         """
         Calculate the weight of the query terms and store it in the queryterms dictionary
@@ -190,6 +189,60 @@ class VectorModel:
                 self.queryterms[term] = 0
         return self.queryterms
     
+    
+    def __get_query_terms_docs(self, query:str):
+        """
+        Get the terms of the query and store it in a list
+        :param query: query to search
+        :return: list of terms
+        """
+        terms= []
+        for term in self.__get_split_terms(query):
+            if self.docterms.get(term) != None:
+                terms.append(term)
+        return terms
+
+
+    #OK
+    def __docterms_data(self, sensitive:bool):
+        """
+        Calculate the frequency, tf, idf and w of the terms in the documents and store it in the docterms dictionary
+        :param documents: list of documents
+        :get docterms: empty dictionary to store terms and their frequency, tf, idf and w
+        :param sensitive: boolean to know if the search is sensitive or not
+        """
+        for doc in self.dataset.get_docs_data():
+            if sensitive:
+                terms_freq= self.__get_count(self.__get_split_terms(doc['text']))
+            else:
+                terms_freq= self.__get_count(self.__get_split_terms(doc['text'].lower()))
+            
+            max= self.__get_max_count(terms_freq)
+            
+            for term in terms_freq:
+                if self.docterms.get(term) == None:
+                    self.docterms[term] = {doc['id']:{'freq':terms_freq[term], 'tf':terms_freq[term]/max, 'idf':0, 'w':0}}
+                else:
+                    self.docterms[term][doc['id']] = {'freq':terms_freq[term], 'tf':terms_freq[term]/max, 'idf':0, 'w':0}
+            
+        for term in self.docterms:
+            for doc in self.docterms[term]:
+                self.docterms[term][doc]['idf'] = log(self.dataset.docslen / len(self.docterms[term]), 10)
+                self.docterms[term][doc]['w'] = self.docterms[term][doc]['tf'] * self.docterms[term][doc]['idf']
+    
+    #OK
+    def __get_count(self, elements:list):
+        """
+        Get the frequency of the terms in the query and store it in a dictionary of key as term and value as frequency
+        :param terms: list of terms
+        :return: dictionary with terms and their frequency
+        """
+        count= dict()
+        for element in elements:
+            count[element]= elements.count(element)
+        return count
+    
+    #OK
     def __get_max_count(self, count:dict):
         """
         Get the max frequency of the terms in the query
@@ -202,68 +255,7 @@ class VectorModel:
                 max = count[term]
         return max
 
-    def __get_count(self, elements:list):
-        """
-        Get the frequency of the terms in the query and store it in a dictionary of key as term and value as frequency
-        :param terms: list of terms
-        :return: dictionary with terms and their frequency
-        """
-        count= dict()
-        for element in elements:
-            count[element]= elements.count(element)
-        return count
-
-    def __get_query_terms_docs(self, query:str):
-        """
-        Get the terms of the query and store it in a list
-        :param query: query to search
-        :return: list of terms
-        """
-        terms= []
-        for term in self.__get_split_terms(query):
-            if self.docterms.get(term) != None:
-                terms.append(term)
-        return terms
-        
-
-
-    def __docterms_data(self, sensitive:bool):
-        """
-        Calculate the frequency, tf, idf and w of the terms in the documents and store it in the docterms dictionary
-        :param documents: list of documents
-        :get docterms: empty dictionary to store terms and their frequency, tf, idf and w
-        :param sensitive: boolean to know if the search is sensitive or not
-        """
-        for doc in self.dataset.get_docs_data():
-            terms_freq= self.__get_count(self.__get_split_terms(self.__get_doc_data(doc, sensitive)))
-            max= self.__get_max_count(terms_freq)
-            
-            for term in terms_freq:
-                if self.docterms.get(term) == None:
-                    self.docterms[term] = {doc:{'freq':terms_freq[term], 'tf':terms_freq[term]/max, 'idf':0, 'w':0}}
-                else:
-                    self.docterms[term][doc] = {'freq':terms_freq[term], 'tf':terms_freq[term]/max, 'idf':0, 'w':0}
-            
-        for term in self.docterms:
-            for doc in self.docterms[term]:
-                self.docterms[term][doc]['idf'] = log(self.dataset.docslen / len(self.docterms[term]), 10)
-                self.docterms[term][doc]['w'] = self.docterms[term][doc]['tf'] * self.docterms[term][doc]['idf']
-        
-
-    def __get_doc_data(self, document:str, sensitive:bool):
-        """
-        Get the data of the document
-        :param document: document to get data
-        :return: data of the document
-        """
-        doc= open(document, 'r')
-        docdata=doc.read()
-        doc.close()
-        if not sensitive:
-            docdata= docdata.lower()
-        return docdata
-
-    #TODO: to utils
+    #OK
     def __get_split_terms(self, document:str):
         """
         Get the terms of the document that are not stopwords and store it in a list
