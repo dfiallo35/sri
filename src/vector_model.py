@@ -28,14 +28,12 @@ class VectorModel:
         self.stopwords= Stopwords('english')
         self.dataset= Datasets()
 
-        
-
 
     def run(self, query:str, dataset:str, limit:int= None, umbral:float= None, alpha:float=0.5, sensitive:bool= False):
         """
-        Do the search of the query in the given documents
+        Do the search of the query in the given dataset
         :param query: query to search
-        :param dataset: directory to search
+        :param dataset: dataset name
         :param limit: limit of documents to return
         :param umbral: similarity umbral
         :param alpha: alpha value for the similarity calculation of the query
@@ -43,36 +41,26 @@ class VectorModel:
         :return: ranked list of documents
         """
         self.__clean_query_data()
-        self.docs_data(dataset, sensitive)
+        if not self.__compare_datasets(dataset):
+            self.docs_data(dataset, sensitive)
         return self.find(query, limit, umbral, alpha, sensitive)
-    
-    #TODO: working...
-    def dataset_data(self, dataset_name:str):
-        self.dataset.get_dataset(dataset_name)
+
 
     #TODO: to dataset
-    def __compare_documents(self, documents:list):
+    def __compare_datasets(self, dataset:str):
         """
         Compare the documents with the set of documents
         :param documents: list of documents
         :get documents: set of documents
         :return: True if the documents are the same, False if not
         """
-        newdocs= set(documents)
-        if self.dataset.documents == {}:
-            return False
-        if self.dataset.documents == newdocs:
+        if self.dataset.dataset_name == dataset:
             return True
         return False
 
     #TODO: compare documents to reuse
     def docs_data(self, dataset:str, sensitive:bool= False):
-        """
-        Do the search of the query in the given documents
-        :param query: query to search
-        :param sensitive: if the query is case sensitive
-        :return: ranked list of documents
-        """
+        self.dataset.get_dataset(dataset)
         self.__docterms_data(sensitive)
 
 
@@ -203,7 +191,6 @@ class VectorModel:
         return terms
 
 
-    #OK
     def __docterms_data(self, sensitive:bool):
         """
         Calculate the frequency, tf, idf and w of the terms in the documents and store it in the docterms dictionary
@@ -230,7 +217,7 @@ class VectorModel:
                 self.docterms[term][doc]['idf'] = log(self.dataset.docslen / len(self.docterms[term]), 10)
                 self.docterms[term][doc]['w'] = self.docterms[term][doc]['tf'] * self.docterms[term][doc]['idf']
     
-    #OK
+
     def __get_count(self, elements:list):
         """
         Get the frequency of the terms in the query and store it in a dictionary of key as term and value as frequency
@@ -242,7 +229,7 @@ class VectorModel:
             count[element]= elements.count(element)
         return count
     
-    #OK
+
     def __get_max_count(self, count:dict):
         """
         Get the max frequency of the terms in the query
@@ -255,7 +242,7 @@ class VectorModel:
                 max = count[term]
         return max
 
-    #OK
+
     def __get_split_terms(self, document:str):
         """
         Get the terms of the document that are not stopwords and store it in a list
