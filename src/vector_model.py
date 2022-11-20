@@ -1,6 +1,7 @@
 from utils import *
 from dataset import Datasets
 from stopwords import Stopwords
+from base_model import Model
 
 
 #TODO: make data sets
@@ -8,7 +9,7 @@ from stopwords import Stopwords
 #TODO: make documentation
 #TODO: First process and save the document data, then just fetch the query
 #TODO: reuse dataset
-class VectorModel:
+class VectorModel(Model):
     def __init__(self):
         """
         :param stopwords: list of stopwords
@@ -16,6 +17,7 @@ class VectorModel:
         :param queryterms: dictionary with query terms and their weight
         :param querysim: dictionary with documents and their similarity
         """
+        super().__init__()
         # dictionary with keys as terms and values as a dictionary with keys as documents and values as a dictionary with keys as freq, tf, idf and w
         # {terms: {docs: {freq, tf, idf, w}}}
         self.docterms= dict()
@@ -24,8 +26,7 @@ class VectorModel:
         # dictionary with keys as documents and values as their similarity
         self.querysim= dict()
         # list of stopwords
-        self.stopwords= Stopwords('english')
-        self.dataset= Datasets()
+        
 
 
     def run(self, query:str, dataset:str, limit:int= None, umbral:float= None, alpha:float=0.5, sensitive:bool= False):
@@ -39,25 +40,12 @@ class VectorModel:
         :param sensitive: if the query is case sensitive
         :return: ranked list of documents
         """
-        self.__clean_query_data()
-        if not self.__compare_datasets(dataset):
+        self.clean_query_data()
+        if not self.compare_datasets(dataset):
             self.docs_data(dataset, sensitive)
         return self.find(query, limit, umbral, alpha, sensitive)
 
 
-    #TODO: to dataset
-    def __compare_datasets(self, dataset:str):
-        """
-        Compare the documents with the set of documents
-        :param documents: list of documents
-        :get documents: set of documents
-        :return: True if the documents are the same, False if not
-        """
-        if self.dataset.dataset_name == dataset:
-            return True
-        return False
-
-    #TODO: compare documents to reuse
     def docs_data(self, dataset:str, sensitive:bool= False):
         self.dataset.get_dataset(dataset)
         self.__docterms_data(sensitive)
@@ -80,15 +68,6 @@ class VectorModel:
         rank= self.__ranking(limit, umbral)
         
         return rank
-
-    def __clean_query_data(self):
-        """
-        Clean the query data
-        :get queryterms: empty dictionary to store query terms and their weight
-        :get querysim: empty dictionary to store documents and their similarity
-        """
-        self.queryterms.clear()
-        self.querysim.clear()
     
     
     def __ranking(self, limit:int, umbral:float):
@@ -184,7 +163,7 @@ class VectorModel:
         :return: list of terms
         """
         terms= []
-        for term in self.__get_split_terms(query):
+        for term in self.get_split_terms(query):
             if self.docterms.get(term) != None:
                 terms.append(term)
         return terms
@@ -199,9 +178,9 @@ class VectorModel:
         """
         for doc in self.dataset.get_docs_data():
             if sensitive:
-                terms_freq= self.__get_count(self.__get_split_terms(doc['text']))
+                terms_freq= self.__get_count(self.get_split_terms(doc['text']))
             else:
-                terms_freq= self.__get_count(self.__get_split_terms(doc['text'].lower()))
+                terms_freq= self.__get_count(self.get_split_terms(doc['text'].lower()))
             
             max= self.__get_max_count(terms_freq)
             
@@ -240,13 +219,3 @@ class VectorModel:
             if max < count[term]:
                 max = count[term]
         return max
-
-
-    def __get_split_terms(self, document:str):
-        """
-        Get the terms of the document that are not stopwords and store it in a list
-        :param document: document to split
-        :return: list of terms
-        """
-        doc= split_words(document)
-        return self.stopwords.not_stopwords_terms(doc)
