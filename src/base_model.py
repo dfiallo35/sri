@@ -1,5 +1,5 @@
 from utils import *
-from dataset import Datasets
+from dataset import *
 from stopwords import Stopwords
 
 
