@@ -1,7 +1,10 @@
 from os import getcwd
 from os.path import join
 import re
+import nltk
 
+
+#TODO: use module for estopwords
 class Stopwords:
     def __init__(self, languaje:str):
         #TODO: make it a dictionary for O(1)
@@ -9,15 +12,12 @@ class Stopwords:
 
     def __get_stopwords(self, languaje:str):
         if languaje == 'english':
-            stopwords_doc = open(join(getcwd(), 'data\\english_stopwords.txt'), 'r')
+            stw   = set(nltk.corpus.stopwords.words('english'))
         if languaje == 'spanish':
-            stopwords_doc = open(join(getcwd(), 'data\\spanish_stopwords.txt'), 'r')
+            stw   = set(nltk.corpus.stopwords.words('english'))
         
-        stopwords_data = stopwords_doc.read()
-        stopwords_doc.close()
-        sw= re.findall(r'\w+', stopwords_data)
         stpw= dict()
-        for term in sw:
+        for term in stw:
             stpw[term]= term
         return stpw
         
