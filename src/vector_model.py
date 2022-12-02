@@ -1,7 +1,5 @@
 from utils import *
-from dataset import Datasets
-from stopwords import Stopwords
-from base_model import Model
+from base_model import *
 
 
 #TODO: make data sets
