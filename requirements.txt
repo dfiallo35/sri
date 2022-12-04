@@ -1,0 +1,4 @@
+ir-datasets 0.5.4
+streamlit 1.15.1
+regex 2022.10.31
+nltk 3.7

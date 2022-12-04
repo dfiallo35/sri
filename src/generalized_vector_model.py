@@ -1,0 +1,3 @@
+import vector_model
+class generalized_vector_model(vector_model):
+    ...
