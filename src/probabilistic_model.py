@@ -25,7 +25,9 @@ class Probabilistic_model(Model):
     	# dictonary with the similarity between the query and documents
         self.query_doc_sim = dict()
 
-        # dictionary with keys as terms and values term frequency in the collection
+        # dictionary with keys as terms and values as tuple 
+        # with the first element as the number of documents in which the term appears
+        # and the second element as the term frequency in the collection
         self.term_freq = dict()
 
 
@@ -53,6 +55,7 @@ class Probabilistic_model(Model):
             # for term in list(set(doc_split)):
             for term in doc_split:
                 if self.term_docs.get(term) == None:
+                    self.term_docs = []
                     self.term_docs[term].append(doc)
 
                 else:
@@ -79,18 +82,23 @@ class Probabilistic_model(Model):
         takes as a constant value p_i = 0.5
         :get query_doc_sim: saves the similarity between the query and a documents
         """
-        p_i = 0.5
+        # p_i = 0.5
 
         for term in self.term_docs:
             n_i = len(self.term_docs[term])
             r_i = n_i / self.N
             
-            for doc in self.term_docs[term]:
+            for doc in self.term_docs[term]:                
                 if self.query_doc_sim.get(doc) == None:
-                    self.query_doc_sim[doc] = 0
+                    if 0.5*(1 - r_i) != 0 and r_i*0.5 != 0:
+                        self.query_doc_sim[doc] = 0
+                    else: 
+                        self.query_doc_sim[doc] = np.log10(0.5*(1 - r_i) / r_i*(0.5))
 
-                elif term in self.query_terms and p_i*(1 - r_i) != 0 and r_i*(1 - p_i) != 0:                           
-                    self.query_doc_sim[doc] = self.query_doc_sim[doc] + np.log10(p_i*(1 - r_i) / r_i*(1 - p_i))
+
+                else:                      
+                    if term in self.query_terms and 0.5*(1 - r_i) != 0 and r_i*(0.5) != 0:                           
+                        self.query_doc_sim[doc] = self.query_doc_sim[doc] + np.log10(0.5*(1 - r_i) / r_i*(0.5))
 
 
     def __sim_df(self):
@@ -100,13 +108,20 @@ class Probabilistic_model(Model):
         :get query_doc_sim: saves the similarity between the query and a documents
         """
         for term in self.term_docs:
-            p_i = (1 / 3) + ((2 / 3) * (self.term_freq[term] / self.N))
-            n_i = len(self.term_docs[term])
-            r_i = n_i / self.N
+            p_i = (1 / 3) + ((2 / 3) * (self.term_freq[term][1] / self.N))
             
+            # n_i = len(self.term_docs[term])
+            # n_i = self.term_freq[term][0]
+            # r_i = n_i / self.N
+
+            r_i = self.term_freq[term][0] / self.N 
+
             for doc in self.term_docs[term]:
                 if self.query_doc_sim.get(doc) == None:
-                    self.query_doc_sim[doc] = 0
+                    if p_i*(1 - r_i) != 0 and r_i*(1 - p_i) != 0:
+                        self.query_doc_sim[doc] = np.log10(p_i*(1 - r_i) / r_i*(1 - p_i))
+                    else:
+                        self.query_doc_sim[doc] = 0
 
                 else:
                     if term in self.query_terms and p_i*(1 - r_i) != 0 and r_i*(1 - p_i) != 0:                           
@@ -127,9 +142,9 @@ class Probabilistic_model(Model):
         
         for t in temp:
             if self.term_freq.get(t):
-                self.term_freq[t] = self.term_freq[t] + temp[t]
+                self.term_freq[t] = (len(self.term_docs[t]), self.term_freq[t] + temp[t])
             else: 
-                self.term_freq[t] = temp[t]
+                self.term_freq[t] = (len(self.term_docs[t]), temp[t])
 
 
     # def __get_doc_terms(self, sensitive: bool):
