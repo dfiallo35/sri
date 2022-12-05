@@ -25,8 +25,9 @@ def main():
 def sidebar():
     sidebar= st.sidebar
     sidebar.title("Options")
-    method= sidebar.selectbox("Method", ["Vector Model", "Probabilistic Model"])
-    dataset= sidebar.selectbox("Dataset", ["cranfield", "cacm", "cisi", "med"])
+    method= sidebar.selectbox("Method", ["Vector Model", "Probabilistic Model", "Generalized Vector Model"])
+    dataset= sidebar.selectbox("Dataset", ["cranfield"])
+    example_queries= sidebar.selectbox("Example Queries", Datasets.get_query_data(dataset))
     limit= sidebar.number_input("Limit", min_value=0, max_value=100, value=0, step=1)
     threshold= sidebar.number_input("Threshold", min_value=0.0, max_value=1.0, value=0.0, step= 0.1)
     sensitive= sidebar.checkbox("Sensitive", value=False)

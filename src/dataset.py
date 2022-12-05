@@ -21,3 +21,6 @@ class Datasets:
             data:CranfieldDoc= data
             yield {'id':data.doc_id, 'text':data.text}
 
+    def get_query_data(dataset: str):
+        dts= ir_datasets.load(dataset)
+        return [data.text for data in dts.queries_iter()]
