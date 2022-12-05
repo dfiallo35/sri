@@ -70,16 +70,19 @@ class Probabilistic_model(Model):
         """
        
         for term in self.term_docs:
-            r = len(self.term_docs[term]) / self.dataset.docslen
+            r_term = len(self.term_docs[term]) / self.dataset.docslen
             
-            for doc in self.term_docs[term]:                
-                if self.query_doc_sim.get(doc) == None:
-                    if 0.5 * (1 - r) != 0 and r * 0.5 != 0:
-                        self.query_doc_sim[doc] = 0
+            for doc in self.term_docs[term]:      
+                if term in self.query_terms:          
+                    if self.query_doc_sim.get(doc) == None:
+                        if (1 - r_term) != 0 and r_term != 0:
+                                self.query_doc_sim[doc] = np.log10((1 - r_term) / r_term)
+                        else:
+                                self.query_doc_sim[doc] = 0
 
-                    else: 
-                        self.query_doc_sim[doc] = np.log10(0.5 * (1 - r) / r * (0.5))
+                    else:
+                        self.query_doc_sim[doc] = self.query_doc_sim[doc] + np.log10((1 - r_term) / r_term)
 
                 else:                      
-                    if term in self.query_terms and 0.5 * (1 - r) != 0 and r * (0.5) != 0:                           
-                        self.query_doc_sim[doc] = self.query_doc_sim[doc] + np.log10(0.5 * (1 - r) / r * 0.5)
+                    if self.query_doc_sim.get(doc) == None:                           
+                        self.query_doc_sim[doc] = 0
