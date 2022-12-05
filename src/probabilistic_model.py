@@ -165,7 +165,7 @@ class Probabilistic_Model(Model):
         takes as a constant value p_i = 0.5
         :get query_doc_sim: saves the similarity between the query and a documents
         """
-       
+
         for term in self.term_docs:
             r_term = len(self.term_docs[term]) / self.dataset.docslen
             
@@ -180,8 +180,6 @@ class Probabilistic_Model(Model):
                     else:
                         self.query_doc_sim[doc] = self.query_doc_sim[doc] + np.log10((1 - r_term) / r_term)
 
-                else:                      
-                    if self.query_doc_sim.get(doc) == None:                           
-                        self.query_doc_sim[doc] = 0
-
-
+                # else:                      
+                #     if self.query_doc_sim.get(doc) == None:                           
+                #         self.query_doc_sim[doc] = 0
