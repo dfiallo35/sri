@@ -2,6 +2,7 @@ from os import getcwd
 from os.path import join
 import re
 import nltk
+nltk.download('stopwords')
 
 
 #TODO: use module for estopwords

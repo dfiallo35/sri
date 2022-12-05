@@ -2,11 +2,8 @@ from utils import *
 from base_model import *
 
 
-#TODO: make data sets
-#TODO: update visual
+#TODO: visual title
 #TODO: make documentation
-#TODO: First process and save the document data, then just fetch the query
-#TODO: reuse dataset
 class VectorModel(Model):
     def __init__(self):
         """
@@ -217,3 +214,5 @@ class VectorModel(Model):
             if max < count[term]:
                 max = count[term]
         return max
+
+
