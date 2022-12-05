@@ -1,8 +1,11 @@
 import streamlit as st
 from vector_model import *
+import os
+from PIL import Image
 
 def main():
-    st.title('')
+    img_dir= os.path.realpath(os.path.join(os.path.dirname(os.path.realpath(__file__)) , os.path.join('imgs', 'logo.png')))
+    st.image(Image.open(img_dir), width= 200)
     method, dataset, limit, threshold, sensitive= sidebar()
     col1, col2= st.columns([4,1])
     query= col1.text_input("", key="different")
@@ -35,7 +38,6 @@ def sidebar():
     return method, dataset, limit, threshold, sensitive
 
 
-#    Similarity: {result[1]}"
 def show_results(results, model: Model):
     for result in results:
         doc: Datasets= model.dataset.dataset.docs_iter()[int(result[0])]
