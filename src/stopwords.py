@@ -5,7 +5,7 @@ import nltk
 nltk.download('stopwords')
 
 
-#TODO: use module for estopwords
+#todo: use module for estopwords
 class Stopwords:
     def __init__(self, languaje:str):
         #TODO: make it a dictionary for O(1)

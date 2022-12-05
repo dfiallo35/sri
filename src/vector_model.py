@@ -2,8 +2,8 @@ from utils import *
 from base_model import *
 
 
-#TODO: visual title
-#TODO: make documentation
+#todo: visual title
+#todo: make documentation
 class VectorModel(Model):
     def __init__(self):
         """
