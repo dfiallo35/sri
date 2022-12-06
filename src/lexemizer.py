@@ -1,5 +1,3 @@
-from os import getcwd
-from os.path import join
 import re
 import nltk
 from nltk.stem.lancaster import LancasterStemmer
