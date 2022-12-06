@@ -1,4 +1,3 @@
-from utils import *
 from base_model import *
 
 
