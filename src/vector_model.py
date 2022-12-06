@@ -1,7 +1,7 @@
 from base_model import *
 from math import log
 
-#fix: first values have sim 1
+#fix: first values have sim 1 has no content
 #todo: visual title
 #todo: make documentation
 class VectorModel(Model):
@@ -152,6 +152,9 @@ class VectorModel(Model):
         :get docterms: empty dictionary to store terms and their frequency, tf, idf and w
         """
         for doc in self.dataset.get_docs_data():
+            if doc['text'] == '':
+                continue
+
             terms_freq= self.__get_frequency(self.get_split_terms(doc['text']))
             
             max= self.__get_max_count(terms_freq)
@@ -194,5 +197,3 @@ class VectorModel(Model):
             if max < count[term]:
                 max = count[term]
         return max
-
-
