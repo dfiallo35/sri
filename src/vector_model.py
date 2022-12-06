@@ -1,6 +1,7 @@
 from base_model import *
+from math import log
 
-
+#fix: first values have sim 1
 #todo: visual title
 #todo: make documentation
 class VectorModel(Model):
@@ -56,7 +57,6 @@ class VectorModel(Model):
         self.__query_data(query, alpha)
         self.__sim()
         rank= self.__ranking(limit, umbral)
-        
         return rank
     
     
