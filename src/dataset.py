@@ -17,10 +17,12 @@ class Datasets:
         self.docslen= self.dataset.docs_count()
 
     def get_docs_data(self):
-        for data in self.dataset.docs_iter():
-            data:CranfieldDoc= data
-            yield {'id':data.doc_id, 'text':data.text}
+        return [{'id':data.doc_id, 'text':data.text} for data in self.dataset.docs_iter()]
 
     def get_query_data(dataset: str):
-        dts= ir_datasets.load(dataset)
-        return [data.text for data in dts.queries_iter()]
+        return [data.text for data in ir_datasets.load(dataset).queries_iter()]
+
+
+# a= ir_datasets.load('gov2')
+# for i in a.docs_iter():
+#     print(i)
