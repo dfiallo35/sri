@@ -1,5 +1,5 @@
 import streamlit as st
-from vector_model import *
+from vector_model import Datasets, Model, VectorModel
 import os
 from PIL import Image
 
