@@ -3,49 +3,73 @@ from vector_model import *
 import os
 from PIL import Image
 
-def main():
-    img_dir= os.path.realpath(os.path.join(os.path.dirname(os.path.realpath(__file__)) , os.path.join('imgs', 'logo.png')))
-    st.image(Image.open(img_dir), width= 200)
-    method, dataset, limit, threshold, sensitive= sidebar()
-    col1, col2= st.columns([4,1])
-    query= col1.text_input("", key="different")
-    col2.text('')
-    col2.text('')
-    run= col2.button('Search')
+
+class Visual:
+    def __init__(self):
+        self.sbar= None
+        self.method:str = None
+        self.dataset:str = None
+        self.example_queries:str = None
+        self.limit:int = None
+        self.threshold:float = None
+        self.example_queries:str = None
+        self.input_type:str = None
     
-    if limit == 0:
-        limit= 100
-    if threshold == 0.0:
-        threshold= None
-
-    models= {'Vector Model': VectorModel()}
-    if run:
-        results= models[method].run(query=query, dataset=dataset, umbral=threshold, sensitive=sensitive, limit=limit)
-        show_results(results, models[method])
+        self.models:dict = {
+            'Vector Model': VectorModel()
+        }
 
 
+    def main(self):
+        img_dir= os.path.realpath(os.path.join(os.path.dirname(os.path.realpath(__file__)) , os.path.join('imgs', 'logo.png')))
+        st.image(Image.open(img_dir), width= 200)
+        self.sidebar()
 
-def sidebar():
-    sidebar= st.sidebar
-    sidebar.title("Options")
-    method= sidebar.selectbox("Method", ["Vector Model", "Probabilistic Model", "Generalized Vector Model"])
-    dataset= sidebar.selectbox("Dataset", ["cranfield"])
-    example_queries= sidebar.selectbox("Example Queries", Datasets.get_query_data(dataset))
-    limit= sidebar.number_input("Limit", min_value=0, max_value=100, value=0, step=1)
-    threshold= sidebar.number_input("Threshold", min_value=0.0, max_value=1.0, value=0.0, step= 0.1)
-    sensitive= sidebar.checkbox("Sensitive", value=False)
+        if self.limit == 0:
+            self.limit= 100
+        if self.threshold == 0.0:
+            self.threshold= None
 
-    return method, dataset, limit, threshold, sensitive
+        if self.input_type == "Text":
+            col1, col2= st.columns([4,1])
+            query= col1.text_input("", key="different")
+            col2.text('')
+            col2.text('')
+            run= col2.button('Search')
+        if self.input_type == "Example queries":
+            col1, col2= st.columns([4,1])
+            query= col1.selectbox("", Datasets.get_query_data(self.dataset))
+            col2.text('')
+            col2.text('')
+            run= col2.button('Search')
+            
+
+        
+        if run:
+            results= self.models[self.method].run(query=query, dataset=self.dataset, umbral=self.threshold, limit=self.limit)
+            self.show_results(results, self.models[self.method])
 
 
-def show_results(results, model: Model):
-    for result in results:
-        doc: Datasets= model.dataset.dataset.docs_iter()[int(result[0])]
-        with st.expander(label=f'Document: {result[0]}'):
-            st.text('Title: ' + doc.title)
-            st.text(f"Similarity: {result[1]}")
-            st.text('Content:')
-            st.text(doc.text)
+
+    def sidebar(self):
+        self.sbar= st.sidebar
+        self.sbar.title("Options")
+        self.method= self.sbar.selectbox("Method", ["Vector Model", "Probabilistic Model", "Generalized Vector Model"])
+        self.dataset= self.sbar.selectbox("Dataset", ["cranfield"])
+        self.input_type= self.sbar.selectbox("Input type", ["Example queries", "Text"])
+        self.limit= self.sbar.number_input("Limit", min_value=0, max_value=100, value=0, step=1)
+        self.threshold= self.sbar.number_input("Threshold", min_value=0.0, max_value=1.0, value=0.0, step= 0.1)
 
 
-main()
+    def show_results(self, results, model: Model):
+        for result in results:
+            doc: Datasets= model.dataset.dataset.docs_iter()[int(result[0])]
+            with st.expander(label=f'Document: {result[0]}'):
+                st.text('Title: ' + doc.title)
+                st.text(f"Similarity: {result[1]}")
+                st.text('Content:')
+                st.text(doc.text)
+
+
+a= Visual()
+a.main()
