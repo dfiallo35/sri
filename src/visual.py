@@ -62,13 +62,13 @@ class Visual:
 
 
     def show_results(self, results, model: Model):
+        docs = model.dataset.get_docs_data()
         for result in results:
-            doc: Datasets= model.dataset.dataset.docs_iter()[int(result[0])]
             with st.expander(label=f'Document: {result[0]}'):
-                st.text('Title: ' + doc.title)
+                st.text('Title: ' + docs[int(result[0])-1]['title'])
                 st.text(f"Similarity: {result[1]}")
                 st.text('Content:')
-                st.text(doc.text)
+                st.text(docs[int(result[0])-1]['text'])
 
 
 a= Visual()
