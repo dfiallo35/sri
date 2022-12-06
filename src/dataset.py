@@ -2,6 +2,7 @@ import ir_datasets
 from ir_datasets import load
 from ir_datasets.datasets.base import Dataset
 from lexemizer import Lexemizer
+import numpy as np
 
 class Datasets:
     def __init__(self):
@@ -9,7 +10,7 @@ class Datasets:
 
         self.documents:set = None
         self.terms:set = None
-        
+
         self.docslen:int = 0
         self.dataset_name:str = None
         self.lexemizer= Lexemizer()
@@ -25,6 +26,10 @@ class Datasets:
         self.docslen= self.dataset.docs_count()
 
         self.make_docs_matrix()
+
+    @property
+    def get_terms_docs_matrix(self):
+        return np.transpose(self.docterms_matrix)
 
 
     def make_docs_matrix(self):
