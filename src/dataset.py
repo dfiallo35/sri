@@ -28,6 +28,7 @@ class Datasets:
         self.make_docs_matrix()
 
     @property
+    def terms_docs_matrix(self):
         return np.transpose(self.docterms_matrix)
 
 
