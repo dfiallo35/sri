@@ -1,11 +1,11 @@
 from utils import *
 from dataset import *
-from stopwords import Stopwords
+from lexemizer import Lexemizer
 
 
 class Model:
     def __init__(self):
-        self.stopwords= Stopwords('english')
+        self.lexemizer= Lexemizer()
         self.dataset= Datasets()
 
     def run(): ...
@@ -36,5 +36,4 @@ class Model:
         :param document: document to split
         :return: list of terms
         """
-        doc= split_words(document)
-        return self.stopwords.not_stopwords_terms(doc)
+        return self.lexemizer.normalize(document)
