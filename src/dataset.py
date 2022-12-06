@@ -17,7 +17,7 @@ class Datasets:
         self.docslen= self.dataset.docs_count()
 
     def get_docs_data(self):
-        return [{'id':data.doc_id, 'text':data.text} for data in self.dataset.docs_iter()]
+        return [{'id':data.doc_id, 'text':data.text, 'title':data.title} for data in self.dataset.docs_iter()]
 
     def get_query_data(dataset: str):
         return [data.text for data in ir_datasets.load(dataset).queries_iter()]
