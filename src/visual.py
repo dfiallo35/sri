@@ -1,5 +1,6 @@
 import streamlit as st
 from vector_model import Datasets, Model, VectorModel
+from probabilistic_model import ProbabilisticModel
 import os
 from PIL import Image
 
@@ -18,7 +19,8 @@ class Visual:
     @st.cache(suppress_st_warning=False, allow_output_mutation=True)
     def models():
         return { 
-            'Vector Model': VectorModel()
+            'Vector Model': VectorModel(),
+            'Probabilistic Model': ProbabilisticModel()
         }
 
     
