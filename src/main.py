@@ -1,7 +1,3 @@
 from vector_model import *
+from visual import *
 
-a = VectorModel()
-print(
-        a.run(query='',
-                dataset='cranfield')
-)

@@ -1,9 +1,8 @@
-from utils import *
 from base_model import *
 
 
-#TODO: visual title
-#TODO: make documentation
+
+
 class VectorModel(Model):
     def __init__(self):
         """
@@ -24,7 +23,7 @@ class VectorModel(Model):
         
 
 
-    def run(self, query:str, dataset:str, limit:int= None, umbral:float= None, alpha:float=0.5, sensitive:bool= False):
+    def run(self, query:str, dataset:str, limit:int= None, umbral:float= None, alpha:float=0.5):
         """
         Do the search of the query in the given dataset
         :param query: query to search
@@ -32,21 +31,18 @@ class VectorModel(Model):
         :param limit: limit of documents to return
         :param umbral: similarity umbral
         :param alpha: alpha value for the similarity calculation of the query
-        :param sensitive: if the query is case sensitive
         :return: ranked list of documents
         """
-        self.clean_query_data()
-        if not self.compare_datasets(dataset):
-            self.docs_data(dataset, sensitive)
-        return self.find(query, limit, umbral, alpha, sensitive)
+        self.clear([self.queryterms, self.querysim])
 
+        if not self.compare_datasets(dataset) and not self.docterms:
+            self.dataset.build_dataset(dataset)
+            self.data()
+    
+        return self.find(query, limit, umbral, alpha)
+        
 
-    def docs_data(self, dataset:str, sensitive:bool= False):
-        self.dataset.get_dataset(dataset)
-        self.__docterms_data(sensitive)
-
-
-    def find(self, query:str, limit:int= None, umbral:float= None, alpha:float=0.5, sensitive:bool= False):
+    def find(self, query:str, limit:int= None, umbral:float= None, alpha:float=0.5):
         """
         :param query: query to search
         :param documents: list of documents
@@ -55,49 +51,13 @@ class VectorModel(Model):
         :get querysim: dictionary with documents and their similarity
         :return: list of documents sorted by similarity
         """
-        if sensitive:
-            self.__query_data(query, alpha)
-        else:
-            self.__query_data(query.lower(), alpha)
-        self.__sim()
-        rank= self.__ranking(limit, umbral)
-        
-        return rank
-    
-    
-    def __ranking(self, limit:int, umbral:float):
-        """
-        Sort the documents by similarity and return the list based on the restrictions
-        :get querysim: dictionary with documents and their similarity
-        :return: list of documents sorted by similarity
-        """
-        new_querysim= dict()
-        for doc in self.querysim:
-            if self.querysim[doc] != 0:
-                new_querysim[doc]= self.querysim[doc]
-        self.querysim= new_querysim
-
-        rank= sorted(self.querysim.items(), key=lambda x: x[1], reverse=True)
-        if umbral != None:
-            rank= self.__umbral(rank, umbral)
-        if limit != None:
-            rank= rank[:limit]
+        self.query_data(query, alpha)
+        self.sim()
+        rank= self.ranking(limit, umbral, self.querysim)
         return rank
 
-    def __umbral(self, rank:list, umbral:float):
-        """
-        Filter the documents by the similarity using the umbral
-        :param rank: list of documents sorted by similarity
-        :param umbral: similarity umbral
-        :return: list of documents that pass the umbral
-        """
-        newrank= []
-        for doc in rank:
-            if doc[1] >= umbral:
-                newrank.append(doc)
-        return newrank
     
-    def __sim(self):
+    def sim(self):
         """
         Calculate the similarity between the query and the documents and store it in the querysim dictionary
         :get queryterms: dictionary with query terms and their weight
@@ -115,7 +75,7 @@ class VectorModel(Model):
 
         for term in aux:
             for doc in self.docterms[term]:
-                if sim.get(doc) == None:
+                if not sim.get(doc):
                     sim[doc]= {'wiq2': pow(aux[term], 2), 'wij2': pow(self.docterms[term][doc]['w'], 2), 'wijxwiq': aux[term] * self.docterms[term][doc]['w']}
                 else:
                     sim[doc]['wiq2'] += pow(aux[term], 2)
@@ -128,7 +88,7 @@ class VectorModel(Model):
                 self.querysim[doc]= 0
 
 
-    def __query_data(self, query:str, alpha:float):
+    def query_data(self, query:str, alpha:float):
         """
         Calculate the weight of the query terms and store it in the queryterms dictionary
         :param query: query to search
@@ -136,9 +96,8 @@ class VectorModel(Model):
         :param alpha: parameter to calculate w
         :return: dictionary with the query terms and their weight
         """
-        terms= self.__get_query_terms_docs(query)
-        terms_count= self.__get_count(terms)
-        max= self.__get_max_count(terms_count)
+        terms_count= Datasets.get_frequency([term for term in self.normalize(query) if self.docterms.get(term)])
+        max= Datasets.get_max_frequency(terms_count)
         
         for term in terms_count:
             idf= 0
@@ -149,38 +108,23 @@ class VectorModel(Model):
             else:
                 self.queryterms[term] = 0
         return self.queryterms
-    
-    
-    def __get_query_terms_docs(self, query:str):
-        """
-        Get the terms of the query and store it in a list
-        :param query: query to search
-        :return: list of terms
-        """
-        terms= []
-        for term in self.get_split_terms(query):
-            if self.docterms.get(term) != None:
-                terms.append(term)
-        return terms
 
 
-    def __docterms_data(self, sensitive:bool):
+    def data(self):
         """
         Calculate the frequency, tf, idf and w of the terms in the documents and store it in the docterms dictionary
         :param documents: list of documents
         :get docterms: empty dictionary to store terms and their frequency, tf, idf and w
-        :param sensitive: boolean to know if the search is sensitive or not
         """
         for doc in self.dataset.get_docs_data():
-            if sensitive:
-                terms_freq= self.__get_count(self.get_split_terms(doc['text']))
-            else:
-                terms_freq= self.__get_count(self.get_split_terms(doc['text'].lower()))
-            
-            max= self.__get_max_count(terms_freq)
+            if doc['text'] == '':
+                continue
+
+            terms_freq= Datasets.get_frequency(self.normalize(doc['text']))
+            max= Datasets.get_max_frequency(terms_freq)
             
             for term in terms_freq:
-                if self.docterms.get(term) == None:
+                if not self.docterms.get(term):
                     self.docterms[term] = {doc['id']:{'freq':terms_freq[term], 'tf':terms_freq[term]/max, 'idf':0, 'w':0}}
                 else:
                     self.docterms[term][doc['id']] = {'freq':terms_freq[term], 'tf':terms_freq[term]/max, 'idf':0, 'w':0}
@@ -189,30 +133,3 @@ class VectorModel(Model):
             for doc in self.docterms[term]:
                 self.docterms[term][doc]['idf'] = log(self.dataset.docslen / len(self.docterms[term]), 10)
                 self.docterms[term][doc]['w'] = self.docterms[term][doc]['tf'] * self.docterms[term][doc]['idf']
-    
-
-    def __get_count(self, elements:list):
-        """
-        Get the frequency of the terms in the query and store it in a dictionary of key as term and value as frequency
-        :param terms: list of terms
-        :return: dictionary with terms and their frequency
-        """
-        count= dict()
-        for element in elements:
-            count[element]= elements.count(element)
-        return count
-    
-
-    def __get_max_count(self, count:dict):
-        """
-        Get the max frequency of the terms in the query
-        :param count: dictionary with terms and their frequency
-        :return: max frequency
-        """
-        max=0
-        for term in count:
-            if max < count[term]:
-                max = count[term]
-        return max
-
-
