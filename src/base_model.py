@@ -16,7 +16,7 @@ class Model:
         :get documents: set of documents
         :return: True if the documents are the same, False if not
         """
-        if self.dataset.dataset_name == dataset:
+        if self.dataset.docterms_dict or self.dataset.docterms_matrix:
             return True
         return False
     
