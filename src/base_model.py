@@ -1,11 +1,9 @@
 from dataset import Datasets
-from lexemizer import Lexemizer
 from math import log
 import numpy as np
 
 class Model:
     def __init__(self):
-        self.lexemizer= Lexemizer()
         self.dataset= Datasets()
 
     def run(self, query:str, dataset:str, limit:int= None, umbral:float= None): ...
@@ -17,6 +15,7 @@ class Model:
     def sim(self): ...
 
     def query_data(self, query:str): ...
+
 
     def compare_datasets(self, dataset:str):
         """
@@ -67,4 +66,4 @@ class Model:
         :param document: document to split
         :return: list of terms
         """
-        return self.lexemizer.normalize(document)
+        return self.dataset.lexemizer.normalize(document)

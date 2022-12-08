@@ -2,7 +2,6 @@ import re
 import nltk
 from nltk.stem.lancaster import LancasterStemmer
 
-
 class Lexemizer:
     def __init__(self):
         nltk.download('stopwords')

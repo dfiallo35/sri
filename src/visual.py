@@ -41,6 +41,7 @@ class Visual:
             col2.text('')
             col2.text('')
             run= col2.button('Search')
+
         if self.input_type == "Example queries":
             col1, col2= st.columns([4,1])
             query= col1.selectbox(" ", Datasets.get_query_data(self.dataset), label_visibility='hidden')
@@ -56,11 +57,16 @@ class Visual:
 
     def sidebar(self):
         self.sbar= st.sidebar
+
         self.sbar.title("Options")
-        self.method= self.sbar.selectbox("Method", ["Vector Model", "Probabilistic Model", "Generalized Vector Model"])
+        self.method= self.sbar.selectbox("Method", list(Visual.models().keys()))
+
         self.dataset= self.sbar.selectbox("Dataset", ["cranfield"])
+
         self.input_type= self.sbar.selectbox("Input type", ["Example queries", "Text"])
+
         self.limit= self.sbar.number_input("Limit", min_value=0, max_value=100, value=0, step=1)
+
         self.threshold= self.sbar.number_input("Threshold", min_value=0.0, max_value=1.0, value=0.0, step= 0.1)
 
 
