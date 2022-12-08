@@ -14,11 +14,14 @@ class Visual:
         self.threshold:float = None
         self.example_queries:str = None
         self.input_type:str = None
-    
-        self.models:dict = {
+
+    @st.cache(suppress_st_warning=False, allow_output_mutation=True)
+    def models():
+        return { 
             'Vector Model': VectorModel()
         }
 
+    
 
     def main(self):
         img_dir= os.path.realpath(os.path.join(os.path.dirname(os.path.realpath(__file__)) , os.path.join('imgs', 'logo.png')))
@@ -42,12 +45,10 @@ class Visual:
             col2.text('')
             col2.text('')
             run= col2.button('Search')
-            
-
         
         if run:
-            results= self.models[self.method].run(query=query, dataset=self.dataset, umbral=self.threshold, limit=self.limit)
-            self.show_results(results, self.models[self.method])
+            results= Visual.models()[self.method].run(query=query, dataset=self.dataset, umbral=self.threshold, limit=self.limit)
+            self.show_results(results, Visual.models()[self.method])
 
 
 
