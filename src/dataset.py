@@ -14,25 +14,75 @@ class Datasets:
         self.docslen:int = 0
         self.dataset_name:str = None
         self.lexemizer= Lexemizer()
-        self.docterms_matrix: list= None
 
-    def get_dataset(self, dataset:str):
+        self.docterms_matrix: list= None
+        self.docterms_dict: dict= None
+
+    def build_dataset(self, dataset:str):
         self.dataset_name= dataset
 
         self.documents= set()
         self.dataset:Dataset = load(dataset)
+        print('load')
         for doc in self.dataset.docs_iter():
             self.documents.add(doc.doc_id)
         self.docslen= self.dataset.docs_count()
+    
+    def build_dataset_matrix(self, dataset:str):
+        self.build_dataset(dataset)
+        self.__make_docs_matrix()
+    
+    def build_dataset_dict(self, dataset:str):
+        self.build_dataset(dataset)
+        self.__make_docs_dict()
 
-        self.make_docs_matrix()
 
     @property
-    def terms_docs_matrix(self):
+    def terms_docs_frequency_matrix(self):
         return np.transpose(self.docterms_matrix)
+    
+    @property
+    def terms_docs_boolean_matrix(self):
+        matrix= []
+        for row in self.terms_docs_frequency_matrix:
+            newrow=[]
+            for x in row:
+                if x == 0:
+                    newrow.append(0)
+                else:
+                    newrow.append(1)
+            matrix.append(newrow)
+        return matrix
+    
+    @property
+    def docs_terms_frequency_matrix(self):
+        return self.docterms_matrix
+    
+    @property
+    def docs_terms_boolean_matrix(self):
+        matrix= []
+        for row in self.docs_terms_frequency_matrix:
+            newrow=[]
+            for x in row:
+                if x == 0:
+                    newrow.append(0)
+                else:
+                    newrow.append(1)
+            matrix.append(newrow)
+        return matrix
 
+    @property
+    def docs_terms_frequency_dict(self):
+        return self.docterms_dict
+    
+    
+    def __make_docs_dict(self):
+        self.docterms_dict= dict()
+        for doc in self.get_docs_data():
+            self.docterms_dict[doc['id']]= self.lexemizer.normalize(doc['text'])
+    
 
-    def make_docs_matrix(self):
+    def __make_docs_matrix(self):
         docterms_matrix= []
         for doc in self.get_docs_data():
             docterms_matrix.append(self.lexemizer.normalize(doc['text']))
@@ -42,7 +92,6 @@ class Datasets:
             for term in doc:
                 self.terms.add(term)
         
-
         self.docterms_matrix= []
         for doc in docterms_matrix:
             freq= self.get_frequency(doc)
@@ -56,7 +105,7 @@ class Datasets:
     
 
     
-    def get_frequency(self, elements:list):
+    def get_frequency(elements:list):
         """
         Count the frequency of the elements in the list
         :param list: list of elements
@@ -70,8 +119,10 @@ class Datasets:
                 count[element] += 1
         return count
 
+
     def get_docs_data(self):
         return [{'id':data.doc_id, 'text':data.text, 'title':data.title} for data in self.dataset.docs_iter()]
+
 
     def get_query_data(dataset: str):
         return [data.text for data in load(dataset).queries_iter()]
