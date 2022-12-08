@@ -39,7 +39,9 @@ def get_split_terms(document:str):
 
 terms={}
 docs=[]
-for i, doc in enumerate(["papa quiere mas pan","yas mofd sdfno onfd","adnfsd idsbfid iudbf pan"]):
+
+q=np.array([0,0,0,1,1,1,0,2,0,1,0,0,1])
+for i, doc in enumerate(["papa quiere mas pan","yas mofd sdfno onfd","adnfsd idsbfid iudbf pan", "adsad yas mas pan papa fds"]):
 
     docs.append(doc)
     if False:
@@ -106,7 +108,6 @@ print("\n")
 
 
 #query vector in the reduced 2-dimensional space
-q=np.array([0,0,0,1,1,1,0,2,0,1,0])
 # q2 = np.dot(np.dot(np.linalg.inv(Sk),Tk.transpose()),q)
 print(q.shape,DTk.shape,Tk.shape,Sk.shape)
 qk=np.dot(np.dot(q.transpose(),Tk),np.linalg.inv(Sk))
