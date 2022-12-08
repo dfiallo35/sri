@@ -1,13 +1,22 @@
 from dataset import Datasets
 from lexemizer import Lexemizer
-
+from math import log
+import numpy as np
 
 class Model:
     def __init__(self):
         self.lexemizer= Lexemizer()
         self.dataset= Datasets()
 
-    def run(): ...
+    def run(self, query:str, dataset:str, limit:int= None, umbral:float= None): ...
+
+    def find(self, query:str, limit:int= None, umbral:float= None): ...
+
+    def data(self): ...
+
+    def sim(self): ...
+
+    def query_data(self, query:str): ...
 
     def compare_datasets(self, dataset:str):
         """
@@ -16,20 +25,43 @@ class Model:
         :get documents: set of documents
         :return: True if the documents are the same, False if not
         """
-        if self.dataset.docterms_dict or self.dataset.docterms_matrix:
-            return True
-        return False
+        return self.dataset.docterms_dict or self.dataset.docterms_matrix
     
-    def clean_query_data(self):
-        """
-        Clean the query data
-        :get queryterms: empty dictionary to store query terms and their weight
-        :get querysim: empty dictionary to store documents and their similarity
-        """
-        self.queryterms.clear()
-        self.querysim.clear()
+    def clear(self, clearlist: list):
+        for element in clearlist:
+            element.clear()
+    
+    def ranking(self, limit: int, umbral: float, querysim: dict):
+        new_query_sim = dict()
 
-    def get_split_terms(self, document:str):
+        for doc in querysim:
+            if querysim[doc] > 0:
+                new_query_sim[doc] = querysim[doc]
+
+        rank = sorted(new_query_sim.items(), key=lambda x: x[1], reverse=True)
+        
+        if umbral:
+            rank= self.umbral(rank, umbral)
+        
+        if limit:
+            rank= rank[:limit]
+        
+        return rank
+    
+    def umbral(self, rank:list, umbral:float):
+        """
+        Filter the documents by the similarity using the umbral
+        :param rank: list of documents sorted by similarity
+        :param umbral: similarity umbral
+        :return: list of documents that pass the umbral
+        """
+        newrank= []
+        for doc in rank:
+            if doc[1] >= umbral:
+                newrank.append(doc)
+        return newrank
+
+    def normalize(self, document:str):
         """
         Get the terms of the document that are not stopwords and store it in a list
         :param document: document to split
