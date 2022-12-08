@@ -1,6 +1,7 @@
 from base_model import *
 from math import log
 
+
 #fix: first values have sim 1 has no content
 #todo: visual title
 #todo: make documentation
@@ -35,13 +36,14 @@ class VectorModel(Model):
         :return: ranked list of documents
         """
         self.clean_query_data()
-        if not self.compare_datasets(dataset):
+        if not self.compare_datasets(dataset) and not self.docterms:
+            print('get data')
             self.docs_data(dataset)
         return self.find(query, limit, umbral, alpha)
 
 
     def docs_data(self, dataset:str):
-        self.dataset.get_dataset(dataset)
+        self.dataset.build_dataset(dataset)
         self.__docterms_data()
 
 
@@ -131,7 +133,7 @@ class VectorModel(Model):
         :param alpha: parameter to calculate w
         :return: dictionary with the query terms and their weight
         """
-        terms_count= self.__get_frequency([term for term in self.get_split_terms(query) if self.docterms.get(term)])
+        terms_count= Datasets.get_frequency([term for term in self.get_split_terms(query) if self.docterms.get(term)])
         max= self.__get_max_count(terms_count)
         
         for term in terms_count:
@@ -155,7 +157,7 @@ class VectorModel(Model):
             if doc['text'] == '':
                 continue
 
-            terms_freq= self.__get_frequency(self.get_split_terms(doc['text']))
+            terms_freq= Datasets.get_frequency(self.get_split_terms(doc['text']))
             
             max= self.__get_max_count(terms_freq)
             
@@ -169,21 +171,6 @@ class VectorModel(Model):
             for doc in self.docterms[term]:
                 self.docterms[term][doc]['idf'] = log(self.dataset.docslen / len(self.docterms[term]), 10)
                 self.docterms[term][doc]['w'] = self.docterms[term][doc]['tf'] * self.docterms[term][doc]['idf']
-        
-
-    def __get_frequency(self, elements:list):
-        """
-        Count the frequency of the elements in the list
-        :param list: list of elements
-        :return: dictionary with the elements and their frequency
-        """
-        count= dict()
-        for element in elements:
-            if not count.get(element):
-                count[element]= 1
-            else:
-                count[element] += 1
-        return count
     
 
     def __get_max_count(self, count:dict):
