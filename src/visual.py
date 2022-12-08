@@ -41,7 +41,7 @@ class Visual:
             run= col2.button('Search')
         if self.input_type == "Example queries":
             col1, col2= st.columns([4,1])
-            query= col1.selectbox("", Datasets.get_query_data(self.dataset))
+            query= col1.selectbox(" ", Datasets.get_query_data(self.dataset), label_visibility='hidden')
             col2.text('')
             col2.text('')
             run= col2.button('Search')

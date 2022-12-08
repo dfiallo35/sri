@@ -2,8 +2,6 @@ from base_model import *
 from math import log
 
 
-#fix: first values have sim 1 has no content
-#todo: visual title
 #todo: make documentation
 class VectorModel(Model):
     def __init__(self):
@@ -37,7 +35,6 @@ class VectorModel(Model):
         """
         self.clean_query_data()
         if not self.compare_datasets(dataset) and not self.docterms:
-            print('get data')
             self.docs_data(dataset)
         return self.find(query, limit, umbral, alpha)
 

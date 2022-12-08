@@ -23,7 +23,7 @@ class Datasets:
 
         self.documents= set()
         self.dataset:Dataset = load(dataset)
-        print('load')
+
         for doc in self.dataset.docs_iter():
             self.documents.add(doc.doc_id)
         self.docslen= self.dataset.docs_count()

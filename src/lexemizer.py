@@ -1,11 +1,11 @@
 import re
 import nltk
 from nltk.stem.lancaster import LancasterStemmer
-nltk.download('stopwords')
 
-#todo: use module for estopwords
+
 class Lexemizer:
     def __init__(self):
+        nltk.download('stopwords')
         self.stopwords:set = set(nltk.corpus.stopwords.words('english'))
         self.lancaster = LancasterStemmer()
 
