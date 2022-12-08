@@ -102,7 +102,6 @@ class Datasets:
                 else:
                     newdoc.append(freq[term])
             self.docterms_matrix.append(newdoc)
-    
 
     
     def get_frequency(elements:list):
@@ -118,6 +117,18 @@ class Datasets:
             else:
                 count[element] += 1
         return count
+    
+    def get_max_frequency(count:dict):
+        """
+        Get the max frequency of the terms in the query
+        :param count: dictionary with terms and their frequency
+        :return: max frequency
+        """
+        max=0
+        for term in count:
+            if max < count[term]:
+                max = count[term]
+        return max
 
 
     def get_docs_data(self):
