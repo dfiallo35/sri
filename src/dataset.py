@@ -158,24 +158,3 @@ class Datasets:
                     qr['coincidence']= 'False'
                     new_qrel.append(qr)
         return qrel
-
-
-
-
-
-import ir_datasets
-dataset = ir_datasets.load('cranfield')
-
-
-_count= dict()
-for qrel in dataset.qrels_iter():
-    if not _count.get(qrel.query_id):
-        _count[qrel.query_id]= 1
-    else:
-        _count[qrel.query_id] += 1
-print(_count)
-
-for qrel in dataset.qrels_iter():
-    if qrel.query_id =='1':
-        print(qrel)
-        
