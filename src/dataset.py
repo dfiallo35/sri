@@ -148,13 +148,14 @@ class Datasets:
     
     def get_qrels_coincidence(dataset: str, id:str, results: list) -> list:
         qrel= Datasets.get_qrels(dataset, id)
+        results= [result[0] for result in results]
         new_qrel= []
-        for result in results:
-            for qr in qrel:
-                if result[0] == qr['doc']:
-                    qr['coincidence']= 'True'
-                    new_qrel.append(qr)
-                else:
-                    qr['coincidence']= 'False'
-                    new_qrel.append(qr)
+        for qr in qrel:
+            if qr['doc'] in results:
+                qr['coincidence']= 'True'
+                new_qrel.append(qr)
+            else:
+                qr['coincidence']= '--'
+                new_qrel.append(qr)
+            
         return qrel
