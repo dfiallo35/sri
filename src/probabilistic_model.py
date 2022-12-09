@@ -137,9 +137,9 @@ class ProbabilisticModel(Model):
         for term in self.term_docs:
             v_term = self.count_recov_with_term(term, rank)
 
-            p_term = (v_term + 0.5) / (recov_doc + 1)
+            p_term = (v_term + 0.5) / (rr_doc + 1)
 
-            r_term = (len(self.term_docs[term]) - v_term + 0.5) / (self.dataset.docslen - recov_doc + 1)
+            r_term = (len(self.term_docs[term]) - v_term + 0.5) / (self.dataset.docslen - rr_doc + 1)
 
             self.term_p_r[term] = (p_term, r_term)
 
