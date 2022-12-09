@@ -6,9 +6,9 @@ class Model:
     def __init__(self):
         self.dataset= Datasets()
 
-    def run(self, query:str, dataset:str, limit:int= None, umbral:float= None): ...
+    def run(self, query:str, dataset:str, limit:int= None, umbral:float= None) -> list: ...
 
-    def find(self, query:str, limit:int= None, umbral:float= None): ...
+    def find(self, query:str, limit:int= None, umbral:float= None) -> list: ...
 
     def data(self): ...
 
@@ -30,7 +30,7 @@ class Model:
         for element in clearlist:
             element.clear()
     
-    def ranking(self, limit: int, umbral: float, querysim: dict):
+    def ranking(self, limit: int, umbral: float, querysim: dict) -> list:
         new_query_sim = dict()
 
         for doc in querysim:
@@ -47,7 +47,7 @@ class Model:
         
         return rank
     
-    def umbral(self, rank:list, umbral:float):
+    def umbral(self, rank:list, umbral:float) -> list:
         """
         Filter the documents by the similarity using the umbral
         :param rank: list of documents sorted by similarity
@@ -60,7 +60,7 @@ class Model:
                 newrank.append(doc)
         return newrank
 
-    def normalize(self, document:str):
+    def normalize(self, document:str) -> list:
         """
         Get the terms of the document that are not stopwords and store it in a list
         :param document: document to split

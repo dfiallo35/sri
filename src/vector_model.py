@@ -23,7 +23,7 @@ class VectorModel(Model):
         
 
 
-    def run(self, query:str, dataset:str, limit:int= None, umbral:float= None, alpha:float=0.5):
+    def run(self, query:str, dataset:str, limit:int= None, umbral:float= None, alpha:float=0.5) -> list:
         """
         Do the search of the query in the given dataset
         :param query: query to search
@@ -42,7 +42,7 @@ class VectorModel(Model):
         return self.find(query, limit, umbral, alpha)
         
 
-    def find(self, query:str, limit:int= None, umbral:float= None, alpha:float=0.5):
+    def find(self, query:str, limit:int= None, umbral:float= None, alpha:float=0.5) -> list:
         """
         :param query: query to search
         :param documents: list of documents
@@ -53,8 +53,7 @@ class VectorModel(Model):
         """
         self.query_data(query, alpha)
         self.sim()
-        rank= self.ranking(limit, umbral, self.querysim)
-        return rank
+        return self.ranking(limit, umbral, self.querysim)
 
     
     def sim(self):
@@ -107,7 +106,6 @@ class VectorModel(Model):
                 self.queryterms[term] = (alpha + (1 - alpha) * ((terms_count[term])/(max)))*idf
             else:
                 self.queryterms[term] = 0
-        return self.queryterms
 
 
     def data(self):
