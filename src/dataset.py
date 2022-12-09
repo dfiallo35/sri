@@ -1,4 +1,4 @@
-import ir_datasets
+from itertools import count
 from ir_datasets import load
 from ir_datasets.datasets.base import Dataset
 from lexemizer import Lexemizer
@@ -17,6 +17,7 @@ class Datasets:
 
         self.docterms_matrix: list= None
         self.docterms_dict: dict= None
+
 
     def build_dataset(self, dataset:str):
         self.dataset_name= dataset
@@ -38,11 +39,11 @@ class Datasets:
 
 
     @property
-    def terms_docs_frequency_matrix(self):
+    def terms_docs_frequency_matrix(self) -> list:
         return np.transpose(self.docterms_matrix)
     
     @property
-    def terms_docs_boolean_matrix(self):
+    def terms_docs_boolean_matrix(self) -> list:
         matrix= []
         for row in self.terms_docs_frequency_matrix:
             newrow=[]
@@ -55,11 +56,11 @@ class Datasets:
         return matrix
     
     @property
-    def docs_terms_frequency_matrix(self):
+    def docs_terms_frequency_matrix(self) -> list:
         return self.docterms_matrix
     
     @property
-    def docs_terms_boolean_matrix(self):
+    def docs_terms_boolean_matrix(self) -> list:
         matrix= []
         for row in self.docs_terms_frequency_matrix:
             newrow=[]
@@ -72,7 +73,7 @@ class Datasets:
         return matrix
 
     @property
-    def docs_terms_frequency_dict(self):
+    def docs_terms_frequency_dict(self) -> dict:
         return self.docterms_dict
     
     
@@ -104,7 +105,7 @@ class Datasets:
             self.docterms_matrix.append(newdoc)
 
     
-    def get_frequency(elements:list):
+    def get_frequency(elements:list) -> dict:
         """
         Count the frequency of the elements in the list
         :param list: list of elements
@@ -118,7 +119,7 @@ class Datasets:
                 count[element] += 1
         return count
     
-    def get_max_frequency(count:dict):
+    def get_max_frequency(count:dict) -> int:
         """
         Get the max frequency of the terms in the query
         :param count: dictionary with terms and their frequency
@@ -131,9 +132,50 @@ class Datasets:
         return max
 
 
-    def get_docs_data(self):
+    def get_docs_data(self) -> list:
         return [{'id':data.doc_id, 'text':data.text, 'title':data.title} for data in self.dataset.docs_iter()]
 
 
-    def get_query_data(dataset: str):
-        return [data.text for data in load(dataset).queries_iter()]
+    def get_query_data(dataset: str) -> list:
+        return [{'id':data.query_id, 'query':data.text} for data in load(dataset).queries_iter()]
+    
+    def print_query_data(dataset: str) -> list:
+        return [data['id'] + ': ' + data['query'] for data in Datasets.get_query_data(dataset)]
+            
+    def get_qrels(dataset: str, id:str) -> list:
+        qrel= [{'query':data.query_id, 'doc':data.doc_id, 'relevance':data.relevance} for data in load(dataset).qrels_iter() if data.query_id == id]
+        return sorted(qrel, key=lambda x: x['relevance'])
+    
+    def get_qrels_coincidence(dataset: str, id:str, results: list) -> list:
+        qrel= Datasets.get_qrels(dataset, id)
+        new_qrel= []
+        for result in results:
+            for qr in qrel:
+                if result[0] == qr['doc']:
+                    qr['coincidence']= 'True'
+                    new_qrel.append(qr)
+                else:
+                    qr['coincidence']= 'False'
+                    new_qrel.append(qr)
+        return qrel
+
+
+
+
+
+import ir_datasets
+dataset = ir_datasets.load('cranfield')
+
+
+_count= dict()
+for qrel in dataset.qrels_iter():
+    if not _count.get(qrel.query_id):
+        _count[qrel.query_id]= 1
+    else:
+        _count[qrel.query_id] += 1
+print(_count)
+
+for qrel in dataset.qrels_iter():
+    if qrel.query_id =='1':
+        print(qrel)
+        
