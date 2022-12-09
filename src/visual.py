@@ -1,6 +1,7 @@
 import streamlit as st
 from vector_model import Datasets, Model, VectorModel
 from probabilistic_model import ProbabilisticModel
+from latent_semantics_model import LSIModel
 import os
 from PIL import Image
 
@@ -20,7 +21,8 @@ class Visual:
     def models():
         return { 
             'Vector Model': VectorModel(),
-            'Probabilistic Model': ProbabilisticModel()
+            'Probabilistic Model': ProbabilisticModel(),
+            'Latent Semantics Model': LSIModel()
         }
 
     
@@ -61,7 +63,7 @@ class Visual:
         self.sbar.title("Options")
         self.method= self.sbar.selectbox("Method", list(Visual.models().keys()))
 
-        self.dataset= self.sbar.selectbox("Dataset", ["cranfield"])
+        self.dataset= self.sbar.selectbox("Dataset", ['cranfield', 'beir/arguana'])
 
         self.input_type= self.sbar.selectbox("Input type", ["Example queries", "Text"])
 
