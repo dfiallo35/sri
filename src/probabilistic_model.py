@@ -15,6 +15,9 @@ class ProbabilisticModel(Model):
     	# dictonary with the similarity between the query and documents
         self.query_doc_sim = dict()
 
+        # dictionary with keys as terms and values as the values of p and r for the term
+        self.term_p_r = dict()
+
 
     def run(self, query: str, dataset: str, limit: int=None, umbral: float=None):
         self.clear([self.queryterms, self.query_doc_sim])
@@ -74,20 +77,30 @@ class ProbabilisticModel(Model):
         takes as a constant value p_i = 0.5
         :get query_doc_sim: saves the similarity between the query and a documents
         """
-        for term in self.term_docs:
-            r_term = len(self.term_docs[term]) / self.dataset.docslen
+        for term in self.term_docs: # for each term
+            r_term = len(self.term_docs[term]) / self.dataset.docslen # calculates the term r value
             
-            for doc in self.term_docs[term]:      
-                if term in self.queryterms:
-                    if not self.query_doc_sim.get(doc):
-                        if (1 - r_term) != 0 and r_term != 0:
-                                self.query_doc_sim[doc] = np.log10((1 - r_term) / r_term)
-                        else:
+            for doc in self.term_docs[term]: # for each doc in which the term apppears
+                
+                if term in self.queryterms: # if the term is a query term
+                    
+                    if not self.query_doc_sim.get(doc): # if it's the first time that the doc has a term in common with the query 
+                        
+                        if (1 - r_term) != 0 and r_term != 0: # if the values don't indetermine the log function
+                            self.query_doc_sim[doc] = np.log10((1 - r_term) / r_term) # calculate the similarity
+
+                        else: # if some of the values indeterminate the log function
                                 self.query_doc_sim[doc] = 0
 
-                    else:
-                        self.query_doc_sim[doc] = self.query_doc_sim[doc] + np.log10((1 - r_term) / r_term)
+                    else: # if at least one term has already been found common between the document and the query
+                        
+                        if (1 - r_term) != 0 and r_term != 0: # if the values don't indetermine the log function
+                            self.query_doc_sim[doc] = self.query_doc_sim[doc] + np.log10((1 - r_term) / r_term) # sum the similarity already saved from the others terms that coincide in the document and the query 
 
-                # else:                      
-                #     if self.query_doc_sim.get(doc) == None:                           
-                #         self.query_doc_sim[doc] = 0
+                else: # if the term in the document isn't a query term              
+                    
+                    if not self.query_doc_sim.get(doc): # if the document hasn't been analyzed   
+                        self.query_doc_sim[doc] = 0 # the current similarity between it and the query is 0
+
+
+    def pseudo_feedback(self):
