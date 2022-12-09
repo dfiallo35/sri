@@ -50,7 +50,7 @@ class LSIModel(VectorModel):
         :get querysim: empty dictionary to store documents and their similarity
         :return: dictionary with documents and their similarity"""
         terms_docs_matrix = self.dataset.terms_docs_frequency_matrix
-        q = self.__get_vector_query()    #vector query
+        q = np.array(self.__get_vector_query())#vector query
         T, S, DT = np.linalg.svd(terms_docs_matrix)
 
         S = np.diag(S)
@@ -93,14 +93,14 @@ class LSIModel(VectorModel):
         """saves at vector_query the vector of the query putting 0 in the terms that are not in the query"""  
         vector_query=[]
         for term in self.dataset.terms:
-            if self.queryterms.__contains__(self.dataset.terms[term]):
+            if self.queryterms.__contains__(term):
                 vector_query.append(self.queryterms[term])
             else:
                 vector_query.append(0)
         return vector_query
         
     
-    def __doc_sim(doc_j, query):
+    def __doc_sim(self,doc_j, query):
         """"calculate the similarity between the query and a document"""
         result = 0
         dj_norm = np.linalg.norm(doc_j)
