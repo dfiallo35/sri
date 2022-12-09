@@ -43,7 +43,7 @@ class ProbabilisticModel(Model):
         # Pseudo-feedback
         i = 0
 
-        while i in range(0, 5):
+        while i <= 5:
             self.pseudo_feedback_p_r(rank) # compute the values of p and r for all terms based on the relevant recovered documents
 
             self.sim(True) # compute de similarity with new term's p and r values 
