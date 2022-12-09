@@ -36,47 +36,6 @@ class ProbabilisticModel(Model):
         :get query: list with query terms
         :return: list of documents sorted by similarity
         """
-<<<<<<< Updated upstream
-
-        if sensitive:
-            self.__query_terms(query)
-        else:
-            self.__query_terms(query.lower())
-
-        self.__sim()
-
-        rank = self.__ranking(limit, umbral)
-        
-        return rank
-
-
-    def __clean_query_data(self):
-        """
-        Clean the query data
-        :get query_terms: empty dictionary to store query terms
-        """
-
-        self.query_terms.clear()
-
-
-    def __ranking(self, limit: int, umbral: float):
-        new_query_sim = dict()
-
-        for doc in self.query_doc_sim:
-            if self.query_doc_sim[doc] != 0:
-                new_query_sim[doc] = self.query_doc_sim[doc]
-
-        self.query_doc_sim = new_query_sim
-
-        rank = sorted(self.query_doc_sim.items(), key=lambda x: x[1], reverse=True)
-        
-        if umbral != None:
-            rank= self.__umbral(rank, umbral)
-        
-        if limit != None:
-            rank= rank[:limit]
-        
-=======
         self.query_data(query)
         self.sim(False) # computes de similarity
         rank = self.ranking(limit, umbral, self.query_doc_sim) # compute the ranking with the siilarity values
@@ -93,7 +52,6 @@ class ProbabilisticModel(Model):
 
             rank = self.ranking(limit, umbral, self.query_doc_sim) # compute the ranking again with the new similarity values
 
->>>>>>> Stashed changes
         return rank
 
 
@@ -124,16 +82,10 @@ class ProbabilisticModel(Model):
             doc_split = self.normalize(doc['text'])
 
             for term in doc_split:
-<<<<<<< Updated upstream
-                if self.term_docs.get(term) == None:
-                    self.term_docs = []
-                    self.term_docs[term].append(doc)
-=======
                 self.term_p_r[term] = (0.5, 0)
                 
                 if not self.term_docs.get(term):
                     self.term_docs[term] = [doc['id']]
->>>>>>> Stashed changes
 
                 else:
                     if doc not in self.term_docs[term]:
@@ -150,40 +102,12 @@ class ProbabilisticModel(Model):
             self.queryterms.add(term)
 
 
-<<<<<<< Updated upstream
-    def __sim(self):
-=======
     def sim(self, feedback: bool):
->>>>>>> Stashed changes
         """
         Computes the similarity between the query and the documents from the collection
         takes as a constant value p_i = 0.5
         :get query_doc_sim: saves the similarity between the query and a documents
         """
-<<<<<<< Updated upstream
-
-        for term in self.term_docs:
-            r_term = len(self.term_docs[term]) / self.dataset.docslen
-            
-            for doc in self.term_docs[term]: # for each doc in which the term apppears
-                
-                if term in self.queryterms: # if the term is a query term
-                    
-                    if not self.query_doc_sim.get(doc): # if it's the first time that the doc has a term in common with the query 
-                        
-                        if (1 - r_term) != 0 and r_term != 0: # if the values don't indetermine the log function
-                            self.query_doc_sim[doc] = np.log10((1 - r_term) / r_term) # calculate the similarity
-
-                        else: # if some of the values indeterminate the log function
-                                self.query_doc_sim[doc] = 0
-
-                    else:
-                        self.query_doc_sim[doc] = self.query_doc_sim[doc] + np.log10((1 - r_term) / r_term)
-
-                # else:                      
-                #     if self.query_doc_sim.get(doc) == None:                           
-                #         self.query_doc_sim[doc] = 0
-=======
         for term in self.term_docs: # for each term
             r_term = len(self.term_docs[term]) / self.dataset.docslen # calculates the term r value
 
@@ -248,4 +172,3 @@ class ProbabilisticModel(Model):
                 v_term = v_term + 1
 
         return v_term
->>>>>>> Stashed changes
