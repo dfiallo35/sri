@@ -2,7 +2,7 @@ from vector_model import *
 import numpy as np
 
 
-class LSI_Model(VectorModel):
+class LSIModel(VectorModel):
     
     def __init__(self):
         super().__init__() 
