@@ -94,9 +94,9 @@ class LSIModel(VectorModel):
         vector_query=[]
         for term in self.dataset.terms:
             if self.queryterms.__contains__(self.dataset.terms[term]):
-                self.vector_query.append(self.queryterms[term])
+                vector_query.append(self.queryterms[term])
             else:
-                self.vector_query.append(0)
+                vector_query.append(0)
         return vector_query
         
     
