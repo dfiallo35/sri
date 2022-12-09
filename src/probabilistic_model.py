@@ -43,6 +43,7 @@ class ProbabilisticModel(Model):
         # Pseudo-feedback
         i = 0
 
+        # while i in range(0, 6):
         while i <= 5:
             self.pseudo_feedback_p_r(rank) # compute the values of p and r for all terms based on the relevant recovered documents
 
@@ -123,7 +124,7 @@ class ProbabilisticModel(Model):
                 else: # if the term in the document isn't a query term              
                     
                     if not self.query_doc_sim.get(doc): # if the document hasn't been analyzed   
-                        self.query_doc_sim[doc] = 0 # the current similarity between it and the query is 0
+                        self.query_doc_sim[doc] = 0 # the current similarity between the doc and the query is 0
 
     
     def pseudo_feedback_p_r(self, rank: list):
