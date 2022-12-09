@@ -94,7 +94,7 @@ class Datasets:
         
         self.docterms_matrix= []
         for doc in docterms_matrix:
-            freq= self.get_frequency(doc)
+            freq= Datasets.get_frequency(doc)
             newdoc= []
             for term in self.terms:
                 if not freq.get(term):
