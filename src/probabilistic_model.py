@@ -18,6 +18,9 @@ class ProbabilisticModel(Model):
         # dictionary with keys as terms and values as the values of p and r for the term
         self.term_p_r = dict()
 
+        # retrieval status value
+        self.rsv = 0 
+
 
     def run(self, query: str, dataset: str, limit: int=None, umbral: float=None):
         self.clear([self.queryterms, self.query_doc_sim])
@@ -38,19 +41,19 @@ class ProbabilisticModel(Model):
         """
         self.query_data(query)
         self.sim(False) # computes de similarity
-        rank = self.ranking(limit, umbral, self.query_doc_sim) # compute the ranking with the siilarity values
+        rank = self.ranking(limit, umbral, self.query_doc_sim) # computes the ranking with the siilarity values
 
         # Pseudo-feedback
         i = 0
 
-        while i in range(0, 5):
-            self.pseudo_feedback_p_r(rank) # compute the values of p and r for all terms based on the relevant recovered documents
+        while i in range(0, 10):
+            self.pseudo_feedback_p_r(rank) # computes the values of p and r for all terms based on the relevant recovered documents
 
-            self.sim(True) # compute de similarity with new term's p and r values 
+            self.sim(True) # computes de similarity with new term's p and r values 
 
             i = i + 1
 
-            rank = self.ranking(limit, umbral, self.query_doc_sim) # compute the ranking again with the new similarity values
+            rank = self.ranking(limit, umbral, self.query_doc_sim) # computes the ranking again with the new similarity values
 
         return rank
 
@@ -92,36 +95,34 @@ class ProbabilisticModel(Model):
         takes as a constant value p_i = 0.5
         :get query_doc_sim: saves the similarity between the query and a documents
         """
+
+        self.rsv = 0
+        self.query_doc_sim.clear()
+
         for term in self.term_docs: # for each term
             r_term = len(self.term_docs[term]) / self.dataset.docslen # calculates the term r value
 
-            if not feedback:                
+            if feedback is False:                
                 self.term_p_r[term] = (0.5, r_term) # safes in the dictionary the value of r for the term and p stays constant (p = 0.5)
 
             for doc in self.term_docs[term]: # for each doc in which the term apppears
                 
                 if term in self.queryterms: # if the term is a query term
                     
-                    if not self.query_doc_sim.get(doc): # if it's the first time that the doc has a term in common with the query 
-                        
-                        if not feedback:
-                            # if (1 - r_term) != 0 and r_term != 0: # if the values don't indetermine the log function
-                            if (1 - self.term_p_r[term][1]) != 0 and self.term_p_r[term][1] != 0: # if the values don't indetermine the log function
-                                # self.query_doc_sim[doc] = np.log10((1 - r_term) / r_term) # calculate the similarity
-                                self.query_doc_sim[doc] = np.log10((self.term_p_r[term][0]) / (1 - self.term_p_r[term][0])) + np.log10((1 - self.term_p_r[term][1]) / self.term_p_r[term][1]) # calculate the similarity
-
-                            else: # if some of the values indeterminate the log function
-                                    self.query_doc_sim[doc] = 0
+                    self._rsv(term)
+                                                                            
+                    if not self.query_doc_sim.get(doc): # if it's the first time that the doc has a term in common with the query                             
+                        if (1 - self.term_p_r[term][1]) > 0 and self.term_p_r[term][1] > 0 and (1 - self.term_p_r[term][0]) > 0 and self.term_p_r[term][0] > 0: # if the values don't indetermine the log function                            
+                            self.query_doc_sim[doc] = np.log10((self.term_p_r[term][0]) / (1 - self.term_p_r[term][0])) + np.log10((1 - self.term_p_r[term][1]) / self.term_p_r[term][1]) # calculates the similarity
+                    
+                        else: # if some of the values indeterminate the log function
+                            self.query_doc_sim[doc] = 0
 
                     else: # if at least one term has already been found common between the document and the query
-                        
-                        # if (1 - r_term) != 0 and r_term != 0: # if the values don't indetermine the log function
-                        if (1 - self.term_p_r[term][1]) != 0 and self.term_p_r[term][1] != 0: # if the values don't indetermine the log function
-                            # self.query_doc_sim[doc] = self.query_doc_sim[doc] + np.log10((1 - r_term) / r_term) # sum the similarity already saved from the others terms that coincide in the document and the query 
+                        if (1 - self.term_p_r[term][1]) > 0 and self.term_p_r[term][1] > 0 and (1 - self.term_p_r[term][0]) > 0 and self.term_p_r[term][0] > 0: # if the values don't indetermine the log function
                             self.query_doc_sim[doc] = self.query_doc_sim[doc] + np.log10((self.term_p_r[term][0]) / (1 - self.term_p_r[term][0])) + np.log10((1 - self.term_p_r[term][1]) / self.term_p_r[term][1]) # sum the similarity already saved from the others terms that coincide in the document and the query 
 
-                else: # if the term in the document isn't a query term              
-                    
+                else: # if the term in the document isn't a query term     
                     if not self.query_doc_sim.get(doc): # if the document hasn't been analyzed   
                         self.query_doc_sim[doc] = 0 # the current similarity between the doc and the query is 0
 
@@ -156,3 +157,13 @@ class ProbabilisticModel(Model):
                 v_term = v_term + 1
 
         return v_term
+
+
+    def _rsv(self, term: str):
+        """
+        Computes the retrieval status value
+        """
+
+        if (1 - self.term_p_r[term][1]) > 0 and self.term_p_r[term][1] > 0 and (1 - self.term_p_r[term][0]) > 0 and self.term_p_r[term][0] > 0: # if the values don't indetermine the log function                            
+            self.rsv = self.rsv + np.log10((self.term_p_r[term][0]) / (1 - self.term_p_r[term][0])) + np.log10((1 - self.term_p_r[term][1]) / self.term_p_r[term][1]) # calculates the similarity
+                        
