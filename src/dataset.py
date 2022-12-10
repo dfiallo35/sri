@@ -169,9 +169,14 @@ class Datasets:
     def eval(dataset: str, id: str, result: list, B: int=1):
         params= Datasets.get_eval_params(dataset, id, result)
         
-        p= params['RR']/ (params['RR'] + params['RI'])
-        r= params['RR']/ (params['RR'] + params['NR'])
-        
+        if (params['RR'] + params['RI']) == 0:
+            p=0
+        else:
+            p= params['RR']/ (params['RR'] + params['RI'])
+        if (params['RR'] + params['NR']) == 0:
+            r=0
+        else:
+            r= params['RR']/ (params['RR'] + params['NR'])
         if p==0 or r==0:
             f1= 0
         else:
