@@ -1,9 +1,9 @@
-from itertools import count
 from ir_datasets import load
 from ir_datasets.datasets.base import Dataset
 from lexemizer import Lexemizer
 import numpy as np
 
+#fix: division by 0 in f1
 class Datasets:
     def __init__(self):
         self.dataset:Dataset= None
@@ -141,11 +141,43 @@ class Datasets:
     
     def print_query_data(dataset: str) -> list:
         return [data['id'] + ': ' + data['query'] for data in Datasets.get_query_data(dataset)]
-            
+
+
+       
     def get_qrels(dataset: str, id:str) -> list:
         qrel= [{'query':data.query_id, 'doc':data.doc_id, 'relevance':data.relevance} for data in load(dataset).qrels_iter() if data.query_id == id]
         return sorted(qrel, key=lambda x: x['relevance'])
     
+
+    def get_eval_params(dataset: str, id: str, results: list):
+        ds= load(dataset)
+        ndocs= ds.docs_count()
+        qrel= Datasets.get_qrels(dataset, id)
+        resultset= set([rs[0] for rs in results])
+        rr=0
+        nr=0
+        for doc in qrel:
+            if doc['doc'] in resultset:
+                rr+=1
+            else:
+                nr+=1
+        ri= len(results)-rr
+        ni= ndocs - len(results) - len(qrel) + rr
+
+        return {'RR':rr, 'RI':ri, 'NR':nr, 'NI':ni}
+
+    def eval(dataset: str, id: str, result: list, B: int=1):
+        params= Datasets.get_eval_params(dataset, id, result)
+        
+        p= params['RR']/ (params['RR'] + params['RI'])
+        r= params['RR']/ (params['RR'] + params['NR'])
+
+        f1= 2 / ((1/p) + (1/r))
+        f= (1+B**2) / ((1/p) + ((B**2)/r))
+
+        return {'P':p, 'R':r, 'F':f, 'F1':f1}
+
+
     def get_qrels_coincidence(dataset: str, id:str, results: list) -> list:
         qrel= Datasets.get_qrels(dataset, id)
         results= [result[0] for result in results]
