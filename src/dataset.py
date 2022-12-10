@@ -171,9 +171,15 @@ class Datasets:
         
         p= params['RR']/ (params['RR'] + params['RI'])
         r= params['RR']/ (params['RR'] + params['NR'])
-
-        f1= 2 / ((1/p) + (1/r))
-        f= (1+B**2) / ((1/p) + ((B**2)/r))
+        
+        if p==0 or r==0:
+            f1= 0
+        else:
+            f1= 2 / ((1/p) + (1/r))
+        if p==0 or r==0:
+            f=0
+        else:
+            f= (1+B**2) / ((1/p) + ((B**2)/r))
 
         return {'P':p, 'R':r, 'F':f, 'F1':f1}
 
