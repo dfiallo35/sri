@@ -8,8 +8,9 @@ class Datasets:
     def __init__(self):
         self.dataset:Dataset= None
 
-        self.documents:set = None
-        self.terms:set = None
+        self.documents:list = None
+        # self.terms:set = None
+        self.terms:list=None
 
         self.docslen:int = 0
         self.dataset_name:str = None
@@ -22,11 +23,11 @@ class Datasets:
     def build_dataset(self, dataset:str):
         self.dataset_name= dataset
 
-        self.documents= set()
+        self.documents= []
         self.dataset:Dataset = load(dataset)
 
         for doc in self.dataset.docs_iter():
-            self.documents.add(doc.doc_id)
+            self.documents.append(doc.doc_id)
         self.docslen= self.dataset.docs_count()
     
     def build_dataset_matrix(self, dataset:str):
@@ -88,10 +89,11 @@ class Datasets:
         for doc in self.get_docs_data():
             docterms_matrix.append(self.lexemizer.normalize(doc['text']))
         
-        self.terms= set()
+        self.terms= []
         for doc in docterms_matrix:
             for term in doc:
-                self.terms.add(term)
+                if not self.terms.__contains__(term):
+                    self.terms.append(term)
         
         self.docterms_matrix= []
         for doc in docterms_matrix:
