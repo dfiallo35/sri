@@ -47,8 +47,7 @@ class Visual:
             self.results= Visual.models()[self.method].run(query=self.query['query'], dataset=self.dataset, umbral=self.threshold, limit=self.limit)
             self.show_results(self.results, Visual.models()[self.method])
             self.metrics()
-            
-    
+
 
 
     def logo_img(self):
