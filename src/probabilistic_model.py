@@ -35,17 +35,6 @@ class Probabilistic_Model(Model):
 
         return self.find(query, limit, umbral, sensitive)
 
-<<<<<<< Updated upstream
-
-    def __compare_datasets(self, dataset: str):
-        """
-        Compare the documents with the set of documents
-        :param documents: list of documents
-        :get documents: set of documents
-        :return: True if the documents are the same, False if not
-        """
-=======
->>>>>>> Stashed changes
 
         if self.dataset.dataset_name == dataset:
             return True
