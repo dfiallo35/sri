@@ -95,7 +95,7 @@ class VectorModel(Model):
         :param alpha: parameter to calculate w
         :return: dictionary with the query terms and their weight
         """
-        terms_count= Datasets.get_frequency([term for term in self.normalize(query) if self.docterms.get(term)])
+        terms_count= Datasets.get_frequency([term for term in self.normalize_query(query) if self.docterms.get(term)])
         max= Datasets.get_max_frequency(terms_count)
         
         for term in terms_count:

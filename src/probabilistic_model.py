@@ -84,7 +84,7 @@ class ProbabilisticModel(Model):
         :param query: the query string
         :get query_terms: list of query terms
         """
-        for term in self.normalize(query):
+        for term in self.normalize_query(query):
             self.queryterms.add(term)
 
 

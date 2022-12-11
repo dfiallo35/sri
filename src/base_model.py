@@ -1,4 +1,4 @@
-from dataset import Datasets
+from dataset import *
 from math import log
 import numpy as np
 
@@ -67,3 +67,11 @@ class Model:
         :return: list of terms
         """
         return self.dataset.lexemizer.normalize(document)
+    
+    def normalize_query(self, query:str) -> list:
+        """
+        Get the terms of the query that are not stopwords and store it in a list
+        :param query: query to split
+        :return: list of terms
+        """
+        return Lexemizer.consult_expansion(self.dataset.lexemizer.normalize(query))
