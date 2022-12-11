@@ -8,6 +8,7 @@ class Lexemizer:
         nltk.download('stopwords')
         self.stopwords:set = set(stopwords.words('english'))
         self.lexemizer = WordNetLemmatizer()
+        nltk.download('wordnet')
     
     def normalize(self, text: str) -> list:
         return [self.lexemizer.lemmatize(token.lower()) for token in re.split(r'\W+', text) if token not in self.stopwords]
