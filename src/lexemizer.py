@@ -19,7 +19,4 @@ class Lexemizer:
             for synset in wordnet.synsets(term):
                 for lemma in synset.lemmas():
                     newquery.append(lemma.name())
-        print('-------------------------------')
-        print(query)
-        print(list(set(newquery)))
         return list(set(newquery))
