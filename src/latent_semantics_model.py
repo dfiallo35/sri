@@ -11,8 +11,6 @@ class LSIModel(VectorModel):
         self.Sk= None
         self.Uk= None
 
-
-
     def run(self, query:str, dataset:str, limit:int= None, umbral:float= None, k:int = 200) -> list:
         """
         Do the search of the query in the given dataset
@@ -45,6 +43,7 @@ class LSIModel(VectorModel):
         self.sim()
         return self.ranking(limit, umbral, self.querysim)
 
+
     def sim(self):
         """
         Calculate the similarity between the query and the documents and store it in the querysim dictionary
@@ -60,7 +59,6 @@ class LSIModel(VectorModel):
         for i,doc in enumerate(self.dataset.documents):
             doc_vectors[doc]=np.array([[self.DTk[j,i]] for j in range(self.k)])
             self.querysim[doc]=self.__doc_sim(doc_vectors[doc],qk)[0]
-
 
 
     def data(self,k):
@@ -85,8 +83,6 @@ class LSIModel(VectorModel):
         self.DTk = DT[0:k,0:len(DT)] 
 
 
-
-
     def query_data(self, query:str):
         """
         Calculate the weight of the query terms and store it in the queryterms dictionary
@@ -96,9 +92,6 @@ class LSIModel(VectorModel):
         :return: dictionary with the query terms and their weight
         """
         self.queryterms = Datasets.get_frequency(self.normalize(query))
-
-
-
 
 
     def __get_vector_query(self):   
@@ -112,7 +105,7 @@ class LSIModel(VectorModel):
                 vector_query.append(0)
         return vector_query
         
-    
+
     def __doc_sim(self,doc_j, query):
         """"calculate the similarity between the query and a document"""
         sim = 0
