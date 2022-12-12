@@ -17,34 +17,41 @@ class Model:
     def query_data(self, query:str): ...
 
 
-    def compare_datasets(self, dataset:str):
-        """
-        Compare the documents with the set of documents
-        :param documents: list of documents
-        :get documents: set of documents
-        :return: True if the documents are the same, False if not
-        """
+    def reuse_data(self):
+        '''
+        Reuse the data of the dataset if it is already calculated
+        :return: True if the data is reused, False if it is not
+        '''
         return self.dataset.docterms_dict or self.dataset.docterms_matrix
     
     def clear(self, clearlist: list):
+        '''
+        Clear all the elements that are not going to be used in the next execution
+        :param clearlist: list of elements to clear
+        '''
         for element in clearlist:
             element.clear()
     
     def ranking(self, limit: int, umbral: float, querysim: dict) -> list:
+        '''
+        Rank the documents by their similarity
+        :param limit: limit of documents to return
+        :param umbral: similarity umbral
+        :param querysim: dictionary with documents and their similarity
+        :return: list of documents sorted by similarity
+        '''
         new_query_sim = dict()
         for doc in querysim:
             if querysim[doc] > 0:
                 new_query_sim[doc] = querysim[doc]
-        rank = sorted(new_query_sim.items(), key=lambda x: x[1], reverse=True)
 
-        rank = sorted(querysim.items(), key=lambda x: x[1], reverse=True)
+        rank = sorted(new_query_sim.items(), key=lambda x: x[1], reverse=True)
         
         if umbral:
             rank= self.umbral(rank, umbral)
         
         if limit:
             rank= rank[:limit]
-        
         return rank
     
     def umbral(self, rank:list, umbral:float) -> list:
@@ -62,16 +69,16 @@ class Model:
 
     def normalize(self, document:str) -> list:
         """
-        Get the terms of the document that are not stopwords and store it in a list
-        :param document: document to split
+        Normalize the document using the lexemizer
+        :param document: document to normalize
         :return: list of terms
         """
         return self.dataset.lexemizer.normalize(document)
     
     def normalize_query(self, query:str) -> list:
-        """
-        Get the terms of the query that are not stopwords and store it in a list
-        :param query: query to split
+        '''
+        Normalize and expand the query using the lexemizer
+        :param query: query to normalize
         :return: list of terms
-        """
-        return Lexemizer.consult_expansion(self.dataset.lexemizer.normalize(query))
+        '''
+        return self.dataset.lexemizer.consult_expansion(query)

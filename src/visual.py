@@ -9,6 +9,9 @@ from PIL import Image
 #todo: use delta in metric for the arrow
 #todo: R-presicion and Fallout
 class Visual:
+    '''
+    Class to visualize the results of the models
+    '''
     def __init__(self):
         self.sbar= None
 
@@ -30,6 +33,10 @@ class Visual:
 
     @st.cache(suppress_st_warning=False, allow_output_mutation=True)
     def models():
+        '''
+        Use cache to load the models intances and save the data
+        :return: dictionary with the models
+        '''
         return { 
             'Vector Model': VectorModel(),
             'Probabilistic Model': ProbabilisticModel(),
@@ -38,6 +45,9 @@ class Visual:
 
     
     def main(self):
+        '''
+        Main function to run the app
+        '''
         self.logo_img()
         self.sidebar()
         self.set_limit_threshold()
@@ -47,15 +57,22 @@ class Visual:
             self.results= Visual.models()[self.method].run(query=self.query['query'], dataset=self.dataset, umbral=self.threshold, limit=self.limit)
             self.show_results(self.results, Visual.models()[self.method])
             self.metrics()
-
+        else:
+            self.empty_metrics()
 
 
     def logo_img(self):
+        '''
+        Show the logo of the app
+        '''
         img_dir= os.path.realpath(os.path.join(os.path.dirname(os.path.realpath(__file__)) , os.path.join('imgs', 'logo.png')))
         st.image(Image.open(img_dir), width= 200)
     
 
     def set_limit_threshold(self):
+        '''
+        Set the limit and threshold to the default values if they are 0 or None respectively
+        '''
         if self.limit == 0:
             self.limit= 25
         if self.threshold == 0.0:
@@ -63,6 +80,9 @@ class Visual:
 
 
     def sidebar(self):
+        '''
+        Create the sidebar with the options
+        '''
         self.sbar= st.sidebar
 
         self.sbar.title("Options")
@@ -77,6 +97,9 @@ class Visual:
 
 
     def search_box(self):
+        '''
+        Create the search box with the input type selected and the search button
+        '''
         if self.input_type == "Text":
             col1, col2= st.columns([4,1])
             self.query= col1.text_input("", key="different")
@@ -97,9 +120,26 @@ class Visual:
             col2.text('')
             self.run= col2.button('Search')
 
-    
-    def metrics(self):
+    def empty_metrics(self):
+        '''
+        Show the metrics with empty values
+        '''
         with self.sbar.expander('Metrics'):
+            c1, c2= st.columns([1,1])
+            c1.metric('P', 0)
+            c2.metric('R', 0)
+            c3, c4= st.columns([1,1])
+            c3.metric('F', 0)
+            c4.metric('F1', 0)
+        
+        with self.sbar.expander('Documents Relevance'):
+            st.text('')
+
+    def metrics(self):
+        '''
+        Show the metrics of the results
+        '''
+        with self.sbar.expander('Metrics', expanded=True):
             metrics= Datasets.eval(self.dataset, self.query['id'], self.results, B=1)
             c1, c2= st.columns([1,1])
             c1.metric('P', round(metrics['P'], 3))
@@ -113,6 +153,11 @@ class Visual:
         
 
     def show_results(self, results, model: Model):
+        '''
+        Show the results of the search
+        :param results: list of results
+        :param model: model instance
+        '''
         docs = model.dataset.get_docs_data()
         for result in results:
             with st.expander(label=f'Document: {result[0]}'):
