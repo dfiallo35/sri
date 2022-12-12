@@ -35,7 +35,7 @@ class VectorModel(Model):
         """
         self.clear([self.queryterms, self.querysim])
 
-        if not self.compare_datasets(dataset) and not self.docterms:
+        if not self.reuse_data() and not self.docterms:
             self.dataset.build_dataset(dataset)
             self.data()
     

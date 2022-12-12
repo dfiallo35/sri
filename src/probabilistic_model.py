@@ -22,7 +22,7 @@ class ProbabilisticModel(Model):
     def run(self, query: str, dataset: str, limit: int=None, umbral: float=None):
         self.clear([self.queryterms, self.query_doc_sim])
 
-        if not self.compare_datasets(dataset) and not self.term_docs:
+        if not self.reuse_data() and not self.term_docs:
             self.dataset.build_dataset(dataset)
             self.data()
 

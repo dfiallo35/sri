@@ -23,7 +23,7 @@ class LSIModel(VectorModel):
         """
         self.clear([self.queryterms, self.querysim])
         self.k=k
-        if not self.compare_datasets(dataset) and not self.docterms:
+        if not self.reuse_data() and not self.docterms:
             self.dataset.build_dataset_matrix(dataset)
             self.data(k)
     
