@@ -37,7 +37,7 @@ class Model:
                 new_query_sim[doc] = querysim[doc]
         rank = sorted(new_query_sim.items(), key=lambda x: x[1], reverse=True)
 
-        # rank = sorted(querysim.items(), key=lambda x: x[1], reverse=True)
+        rank = sorted(querysim.items(), key=lambda x: x[1], reverse=True)
         
         if umbral:
             rank= self.umbral(rank, umbral)
