@@ -139,7 +139,7 @@ class Datasets:
 
 
     def get_query_data(dataset: str) -> list:
-        return [{'id':data.query_id, 'query':data.text} for data in load(dataset).queries_iter()]
+        return [{'id': str(id+1), 'query':data.text} for id, data in enumerate(load(dataset).queries_iter())]
     
     def print_query_data(dataset: str) -> list:
         return [data['id'] + ': ' + data['query'] for data in Datasets.get_query_data(dataset)]
