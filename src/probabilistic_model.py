@@ -19,17 +19,17 @@ class ProbabilisticModel(Model):
         self.term_p_r = dict()
 
 
-    def run(self, query: str, dataset: str, limit: int=None, umbral: float=None):
+    def run(self, query: str, dataset: str, threshold: float=None):
         self.clear([self.queryterms, self.query_doc_sim])
 
         if not self.reuse_data() and not self.term_docs:
             self.dataset.build_dataset(dataset)
             self.data()
 
-        return self.find(query, limit, umbral)
+        return self.find(query, threshold)
 
     
-    def find(self, query: str, limit: int=None, umbral: float=None):
+    def find(self, query: str, threshold: float=None):
         """
         :param query: query to search
         :param documents: list of documents
@@ -38,7 +38,7 @@ class ProbabilisticModel(Model):
         """
         self.query_data(query)
         self.sim(False) # computes de similarity
-        rank = self.ranking(limit, umbral, self.query_doc_sim) # computes the ranking with the siilarity values
+        rank = self.ranking(threshold, self.query_doc_sim) # computes the ranking with the siilarity values
 
         # Pseudo-feedback
         i = 0
@@ -52,7 +52,7 @@ class ProbabilisticModel(Model):
 
             i = i + 1
 
-            rank = self.ranking(limit, umbral, self.query_doc_sim) # computes the ranking again with the new similarity values
+            rank = self.ranking(threshold, self.query_doc_sim) # computes the ranking again with the new similarity values
 
         return rank
 

@@ -6,9 +6,9 @@ class Model:
     def __init__(self):
         self.dataset= Datasets()
 
-    def run(self, query:str, dataset:str, limit:int= None, umbral:float= None) -> list: ...
+    def run(self, query:str, dataset:str, threshold:float= None) -> list: ...
 
-    def find(self, query:str, limit:int= None, umbral:float= None) -> list: ...
+    def find(self, query:str, threshold:float= None) -> list: ...
 
     def data(self): ...
 
@@ -32,11 +32,10 @@ class Model:
         for element in clearlist:
             element.clear()
     
-    def ranking(self, limit: int, umbral: float, querysim: dict) -> list:
+    def ranking(self, threshold: float, querysim: dict) -> list:
         '''
         Rank the documents by their similarity
-        :param limit: limit of documents to return
-        :param umbral: similarity umbral
+        :param threshold: similarity threshold
         :param querysim: dictionary with documents and their similarity
         :return: list of documents sorted by similarity
         '''
@@ -47,23 +46,21 @@ class Model:
 
         rank = sorted(new_query_sim.items(), key=lambda x: x[1], reverse=True)
         
-        if umbral:
-            rank= self.umbral(rank, umbral)
+        if threshold:
+            rank= self.threshold(rank, threshold)
         
-        if limit:
-            rank= rank[:limit]
         return rank
     
-    def umbral(self, rank:list, umbral:float) -> list:
+    def threshold(self, rank:list, threshold:float) -> list:
         """
-        Filter the documents by the similarity using the umbral
+        Filter the documents by the similarity using the threshold
         :param rank: list of documents sorted by similarity
-        :param umbral: similarity umbral
-        :return: list of documents that pass the umbral
+        :param threshold: similarity threshold
+        :return: list of documents that pass the threshold
         """
         newrank= []
         for doc in rank:
-            if doc[1] >= umbral:
+            if doc[1] >= threshold:
                 newrank.append(doc)
         return newrank
 

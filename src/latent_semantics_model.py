@@ -11,13 +11,12 @@ class LSIModel(VectorModel):
         self.Sk= None
         self.Uk= None
 
-    def run(self, query:str, dataset:str, limit:int= None, umbral:float= None, k:int = 200) -> list:
+    def run(self, query:str, dataset:str, threshold:float= None, k:int = 200) -> list:
         """
         Do the search of the query in the given dataset
         :param query: query to search
         :param dataset: dataset name
-        :param limit: limit of documents to return
-        :param umbral: similarity umbral
+        :param threshold: similarity threshold
         :param alpha: alpha value for the similarity calculation of the query
         :return: ranked list of documents
         """
@@ -27,10 +26,10 @@ class LSIModel(VectorModel):
             self.dataset.build_dataset_matrix(dataset)
             self.data(k)
     
-        return self.find(query, limit, umbral)
+        return self.find(query, threshold)
         
 
-    def find(self, query:str, limit:int= None, umbral:float= None) -> list:
+    def find(self, query:str, threshold:float= None) -> list:
         """
         :param query: query to search
         :param documents: list of documents
@@ -41,7 +40,7 @@ class LSIModel(VectorModel):
         """
         self.query_data(query)
         self.sim()
-        return self.ranking(limit, umbral, self.querysim)
+        return self.ranking(threshold, self.querysim)
 
 
     def sim(self):

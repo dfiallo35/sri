@@ -23,13 +23,12 @@ class VectorModel(Model):
         
 
 
-    def run(self, query:str, dataset:str, limit:int= None, umbral:float= None, alpha:float=0.5) -> list:
+    def run(self, query:str, dataset:str, threshold:float= None, alpha:float=0.5) -> list:
         """
         Do the search of the query in the given dataset
         :param query: query to search
         :param dataset: dataset name
-        :param limit: limit of documents to return
-        :param umbral: similarity umbral
+        :param threshold: similarity threshold
         :param alpha: alpha value for the similarity calculation of the query
         :return: ranked list of documents
         """
@@ -39,10 +38,10 @@ class VectorModel(Model):
             self.dataset.build_dataset(dataset)
             self.data()
     
-        return self.find(query, limit, umbral, alpha)
+        return self.find(query, threshold, alpha)
         
 
-    def find(self, query:str, limit:int= None, umbral:float= None, alpha:float=0.5) -> list:
+    def find(self, query:str, threshold:float= None, alpha:float=0.5) -> list:
         """
         :param query: query to search
         :param documents: list of documents
@@ -53,7 +52,7 @@ class VectorModel(Model):
         """
         self.query_data(query, alpha)
         self.sim()
-        return self.ranking(limit, umbral, self.querysim)
+        return self.ranking(threshold, self.querysim)
 
     
     def sim(self):

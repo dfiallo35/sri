@@ -18,7 +18,6 @@ class Visual:
         self.method:str = None
         self.dataset:str = None
         self.example_queries:str = None
-        self.limit:int = None
         self.threshold:float = None
 
         self.example_queries:str = None
@@ -50,11 +49,11 @@ class Visual:
         '''
         self.logo_img()
         self.sidebar()
-        self.set_limit_threshold()
+        self.set_threshold()
         self.search_box()
 
         if self.run:
-            self.results= Visual.models()[self.method].run(query=self.query['query'], dataset=self.dataset, umbral=self.threshold, limit=self.limit)
+            self.results= Visual.models()[self.method].run(query=self.query['query'], dataset=self.dataset, threshold=self.threshold)
             self.show_results(self.results, Visual.models()[self.method])
             self.metrics()
         else:
@@ -69,12 +68,10 @@ class Visual:
         st.image(Image.open(img_dir), width= 200)
     
 
-    def set_limit_threshold(self):
+    def set_threshold(self):
         '''
-        Set the limit and threshold to the default values if they are 0 or None respectively
+        Set the threshold to the default values if they are 0 or None respectively
         '''
-        if self.limit == 0:
-            self.limit= 25
         if self.threshold == 0.0:
             self.threshold= None
 
@@ -91,8 +88,7 @@ class Visual:
 
         with self.sbar.expander(label='Options'):
             self.input_type= st.selectbox("Input type", ["Example queries", "Text"])
-            self.limit= st.number_input("Limit", min_value=0, max_value=100, value=0, step=1)
-            self.threshold= st.number_input("Threshold", min_value=0.0, max_value=1.0, value=0.0, step= 0.1)
+            self.threshold= st.slider("Threshold", min_value=0.0, max_value=1.0, value=0.0, step= 0.01)
         self.sbar.markdown('-----------------')
 
 
