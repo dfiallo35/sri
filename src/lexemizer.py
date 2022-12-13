@@ -2,7 +2,8 @@ import re
 import nltk
 from nltk.stem.wordnet import WordNetLemmatizer
 from nltk.corpus import wordnet, stopwords
-
+nltk.download('wordnet')
+nltk.download('stopwords')
 
 class Lexemizer:
     def __init__(self):
