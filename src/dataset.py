@@ -254,9 +254,9 @@ class Datasets:
         for qr in qrel:
             if qr['doc'] in results:
                 qr['coincidence']= 'True'
-                new_qrel.append(qr)
+                new_qrel.append({'document':qr['doc'], 'relevance':qr['relevance'], 'coincidence':qr['coincidence']})
             else:
                 qr['coincidence']= '--'
-                new_qrel.append(qr)
+                new_qrel.append({'document':qr['doc'], 'relevance':qr['relevance'], 'coincidence':qr['coincidence']})
             
-        return qrel
+        return new_qrel

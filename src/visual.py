@@ -4,6 +4,9 @@ from probabilistic_model import ProbabilisticModel
 from latent_semantics_model import LSIModel
 import os
 from PIL import Image
+from time import time
+a= time()
+
 
 #todo: use delta in F1
 #todo: use delta in metric for the arrow
@@ -19,6 +22,7 @@ class Visual:
         self.dataset:str = None
         self.example_queries:str = None
         self.threshold:float = None
+        self.beta:float = None
 
         self.example_queries:str = None
         self.input_type:str = None
@@ -28,6 +32,9 @@ class Visual:
 
         self.run:bool= False
         self.results:list= None
+        self.exe_time:float= None
+
+        self.k:int= None
 
 
     @st.cache(suppress_st_warning=False, allow_output_mutation=True)
@@ -53,7 +60,10 @@ class Visual:
         self.search_box()
 
         if self.run:
+            init= time()
             self.results= Visual.models()[self.method].run(query=self.query['query'], dataset=self.dataset, threshold=self.threshold)
+            end= time()
+            self.exe_time= round(end- init, 3)
             self.show_results(self.results, Visual.models()[self.method])
             self.metrics()
         else:
@@ -88,7 +98,12 @@ class Visual:
 
         with self.sbar.expander(label='Options'):
             self.input_type= st.selectbox("Input type", ["Example queries", "Text"])
-            self.threshold= st.slider("Threshold", min_value=0.0, max_value=1.0, value=0.0, step= 0.01)
+            self.threshold= st.slider("Threshold", min_value=0.0, max_value=1.0, value=0.2, step= 0.01)
+            self.beta= st.slider('Beta', min_value=0.0, max_value=2.0, value=1.0, step= 0.01)
+            
+            if self.method == 'Latent Semantics Model':
+                self.k= st.slider('K', min_value=1, max_value=10, value=5, step= 1)
+
         self.sbar.markdown('-----------------')
 
 
@@ -101,7 +116,7 @@ class Visual:
             self.query= col1.text_input("", key="different")
             col2.text('')
             col2.text('')
-            run= col2.button('Search')
+            self.run= col2.button('Search')
 
         if self.input_type == "Example queries":
             col1, col2= st.columns([4,1])
@@ -127,6 +142,7 @@ class Visual:
             c3, c4= st.columns([1,1])
             c3.metric('F', 0)
             c4.metric('F1', 0)
+            st.metric('Execution Time', '0 s')
         
         with self.sbar.expander('Documents Relevance'):
             st.text('')
@@ -136,13 +152,14 @@ class Visual:
         Show the metrics of the results
         '''
         with self.sbar.expander('Metrics', expanded=True):
-            metrics= Datasets.eval(self.dataset, self.query['id'], self.results, B=1)
+            metrics= Datasets.eval(self.dataset, self.query['id'], self.results, B=self.beta)
             c1, c2= st.columns([1,1])
             c1.metric('P', round(metrics['P'], 3))
             c2.metric('R', round(metrics['R'], 3))
             c3, c4= st.columns([1,1])
             c3.metric('F', round(metrics['F'], 3))
             c4.metric('F1', round(metrics['F1'], 3))
+            st.metric('Execution Time', str(self.exe_time) + ' s')
         
         with self.sbar.expander('Documents Relevance'):
             st.dataframe(Datasets.get_qrels_coincidence(self.dataset, self.query['id'], self.results))
