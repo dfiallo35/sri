@@ -26,6 +26,8 @@ class LSIModel(VectorModel):
             self.dataset.build_dataset_matrix(dataset)
             if(len(self.dataset.documents)<k):
                 k=len(self.dataset.documents)/5
+            if(len(self.dataset.documents) < k or len(self.dataset.terms) < k):
+                k=min(len(self.dataset.documents),len(self.dataset.terms))/5
             self.data(k)
     
         return self.find(query, threshold)
