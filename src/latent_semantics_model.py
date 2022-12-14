@@ -24,6 +24,8 @@ class LSIModel(VectorModel):
         self.k=k
         if not self.reuse_data() and not self.docterms:
             self.dataset.build_dataset_matrix(dataset)
+            if(len(self.dataset.documents)<k):
+                k=len(self.dataset.documents)/5
             self.data(k)
     
         return self.find(query, threshold)
