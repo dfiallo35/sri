@@ -17,17 +17,17 @@ class LSIModel(VectorModel):
         :param query: query to search
         :param dataset: dataset name
         :param threshold: similarity threshold
-        :param alpha: alpha value for the similarity calculation of the query
+        :param k: number of eigenvalues of the matrix that will remain 
         :return: ranked list of documents
         """
         self.clear([self.queryterms, self.querysim])
         self.k=k
-        if not self.reuse_data() and not self.docterms:
+        if not self.reuse_data() and not self.Sk:
             self.dataset.build_dataset_matrix(dataset)
             if(len(self.dataset.documents)<k):
                 k=len(self.dataset.documents)/5
             if(len(self.dataset.documents) < k or len(self.dataset.terms) < k):
-                k=min(len(self.dataset.documents),len(self.dataset.terms))/5
+                k=min(len(self.dataset.documents),len(self.dataset.terms))/5+1
             self.data(k)
     
         return self.find(query, threshold)
@@ -36,10 +36,6 @@ class LSIModel(VectorModel):
     def find(self, query:str, threshold:float= None) -> list:
         """
         :param query: query to search
-        :param documents: list of documents
-        :get docterms: dictionary with terms and their frequency, tf, idf and w
-        :get queryterms: dictionary with query terms and their weight
-        :get querysim: dictionary with documents and their similarity
         :return: list of documents sorted by similarity
         """
         self.query_data(query)
@@ -50,9 +46,6 @@ class LSIModel(VectorModel):
     def sim(self):
         """
         Calculate the similarity between the query and the documents and store it in the querysim dictionary
-        :get queryterms: dictionary with query terms and their weight
-        :get docterms: dictionary with terms and their frequency, tf, idf and w
-        :get querysim: empty dictionary to store documents and their similarity
         :return: dictionary with documents and their similarity"""
 
         q = np.array(self.__get_vector_query())#vector query
@@ -66,9 +59,8 @@ class LSIModel(VectorModel):
 
     def data(self,k):
         """
-        Calculate the frequency, tf, idf and w of the terms in the documents and store it in the docterms dictionary
-        :param documents: list of documents
-        :get docterms: empty dictionary to store terms and their frequency, tf, idf and w
+        Calculate the matrix of the SVD decomposition for the matrix of terms-documents and stay with in minor principal of size k        
+        :param k: number of eigenvalues of the matrix that will remain
         """
         for doc in self.dataset.get_docs_data():
             if doc['text'] == '':
@@ -79,7 +71,6 @@ class LSIModel(VectorModel):
         
         terms_docs_matrix = self.dataset.terms_docs_frequency_matrix
         T, S, DT = np.linalg.svd(terms_docs_matrix)
-
         S = np.diag(S)
         self.Tk = T[0:len(T),0:k]
         self.Sk = S[0:k,0:k]
@@ -90,16 +81,14 @@ class LSIModel(VectorModel):
         """
         Calculate the weight of the query terms and store it in the queryterms dictionary
         :param query: query to search
-        :get queryterms: empty dictionary to store terms and their weight
-        :param alpha: parameter to calculate w
+        :get queryterms: empty dictionary to store terms and their weigh
         :return: dictionary with the query terms and their weight
         """
         self.queryterms = Datasets.get_frequency(self.normalize(query))
 
 
     def __get_vector_query(self):   
-        """saves at vector_query the vector of the query putting 0 in the terms that are not in the query"""  
-        
+        """saves at vector_query the vector of the query putting 0 in the terms that are not in the query"""          
         vector_query=[]
         for term in self.dataset.terms:
             if self.queryterms.__contains__(term):
