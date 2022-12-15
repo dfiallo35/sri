@@ -112,7 +112,7 @@
 			\displaystyle tf_{ij} =  \frac{freq_{ij}}{max_l freq_{lj}}
 		\end{equation}
 		\begin{equation}
-			\displaystyle idf_i =  log⁡{\frac{N}{n_i}}
+			\displaystyle idf_i =  log{\frac{N}{n_i}}
 		\end{equation}
 		\begin{equation}
 			\displaystyle w_{ij} = tf_{ij} \cdot idf_i
@@ -122,7 +122,7 @@
 		
 		\begin{equation}
 			\displaystyle w_{ij} = \left( \alpha + 
-\left( 1 - \alpha \right) \frac{freq_{iq}}{max_l \ freq_{lq}} \right) log⁡ \frac{N}{n_i}
+\left( 1 - \alpha \right) \frac{freq_{iq}}{max_l \ freq_{lq}} \right) log \frac{N}{n_i}
 		\end{equation}
 
 		De estos se tiene que:
@@ -177,7 +177,7 @@
 			Posteriormente con estos valores de probabilidades iniciales se procede a calcular la similitud entre un documento y la consulta a través de la siguiente fórmula:
 	
 			\begin{equation}
-				\displaystyle sim(d_j,q) = \sum_{i=1}^m \left( w_{i,j} \cdot w_{i,q} \cdot log⁡ \ \frac{p_i (1 - r_i)}{(1- p_i ) r_i} \right)
+				\displaystyle sim(d_j,q) = \sum_{i=1}^m \left( w_{i,j} \cdot w_{i,q} \cdot log \ \frac{p_i (1 - r_i)}{(1- p_i ) r_i} \right)
 			\end{equation}
 
 			Donde:
@@ -211,6 +211,62 @@
 			Una vez obtenidos los nuevos valores de $ p_i, r_i $ la similitud será computada nuevamente y se retornará un \emph{ranking} en base a esta.\\
 
 			Este proceso donde se calculan nuevamente las probabilidades de ocurrencia de los términos en documentos relevantes o no, se analiza la similitud y se devuelve un \emph{ranking} se realizará en tres ocasiones. El último \emph{ranking} calculado será retornado como respuesta del algoritmo y se tendrá en cuenta para este si es establecido un umbral para la similitud.
+
+
+\section*{ Modelo Indexación Semántica Latente (LSI)}
+
+El modelo de Indexación Semántica Latente es un modelo de recuperación de información derivado del modelo vectorial. Por lo que en nuestra implementación la clase que define este modelo hereda de la clase que define al modelo vectorial y sigue todas las etapas que este sigue.\\
+
+La ISL se basa en el principio de que las palabras que se utilizan en el mismo contexto tienden a tener significados similares. La característica fundamental de la ISL es su habilidad para extraer el contenido conceptual de un documento, estableciendo asociaciones entre aquellos términos que ocurran en contextos similares. \\
+
+Para el análisis ISL primero se construye una matriz ${\displaystyle A_{k}}$ donde las filas representan los términos y las columnas los documentos, esta matriz establece las relaciones término documento por lo que cada elemento  $x_{ij}$  representa el peso del término \textit{i} en el documento \textit{j}. Estos pesos en este caso son el número de ocurrencias del término \textit{i} en el documento \textit{j} y están contenidos en la matriz \textbf{A} que se calcula en la clase dataset.\\
+
+El objetivo fundamental de LSI es encontrar una matriz ${\displaystyle A_{k}}$ que constituya una aproximación a la matriz Términos-Documentos ${\displaystyle A}$. En esa aproximación se va a obtener información que no estaba disponible directamente en la matriz ${\displaystyle A}$, sino que se encontraba latente en esta. Esta matriz debe cumplir que el rango debe ser al menos ${\displaystyle k}$, donde ${\displaystyle k}$ es mucho menor que el rango de ${\displaystyle A}$. En este caso decimos que ${\displaystyle A_{k}}$ es una aproximación de rango bajo.\\
+
+La descomposición en valores singulares (SVD) puede ser usada para resolver el problema de la matriz de aproximación de rango bajo. Para esto se realiza el siguiente procedimiento:\\
+
+ Hallar la SVD de la matriz Términos-Documentos. En otras palabras, siendo ${\displaystyle A}$ $ \in $ ${\displaystyle R^{m*n}}$ y rango ${\displaystyle r}$, se obtiene como resultado ${\displaystyle A=TSD^{T}}$, donde:
+\begin{itemize}
+
+\item ${\displaystyle T} \in {\displaystyle R^{m*m}}$ es una matriz cuyas columnas son vectores propios ortogonales de $ {\displaystyle AA^{T}}$ . Representa los términos en el espacio de términos.
+
+\item ${\displaystyle S}$ es la matriz diagonal de los valores propios
+
+\item ${\displaystyle D^T} \in {\displaystyle R^{n*n}}$ es una matriz cuyas columnas son vectores propios ortogonales de ${\displaystyle A^{T}A}$. Representa los documentos en el espacio de documentos.
+\end{itemize}
+
+Esto se realiza en nuestro código obteniendo las matrices \textbf{T}, \textbf{S}, \textbf{DT} que son la descomposición en valores propios de \textbf{A} obtenidos a partir de la función \emph{linalg.svd}(\textbf{A})
+implementada en la librería \emph{numpy}.\\
+
+Luego se realiza el proceso de truncar los $r-k$ menores valores
+ singulares de S ayuda a generar una aproximación $rango-k$ de menor error, ya que $A_{_{k}}$ queda de la forma:
+
+$$A_{k}=TS_{k}D^{T}$$
+
+\begin{equation}
+A_{k}= T
+\begin{pmatrix}
+\sigma_{1} & 0 & 0 & 0 & ...\\
+0 & \sigma_{2} & 0 & 0 & ...\\
+0 & 0 & ... & 0 & ...\\
+0 & 0 & 0 & \sigma_{k} & ... \\
+0 & 0 & 0 & 0 & ...\\
+... & ... & ... & ... & ...
+\end{pmatrix}
+D^{T}
+\end{equation}
+
+$$A_{k}=\sum^{k}_{i=1}\sigma_{i}\vec{u_{i}}\vec{v_{i}}^{T}$$
+
+Donde $\vec{u_{i}}$ y $\vec{v_{i}}$ son las \textit{i}-ésimas columnas de T y D , respectivamente. Por tanto, $\vec{u_{i}}\vec{v_{i}}^{T}$ T es una matriz rango-1, y $A_{k}$ queda expresada como la suma de \textit{k} matrices rango-1, donde el coeficiente de cada una es un valor singular.\\
+
+En nuestro código guardamos como parte de la clase LSI las matrices  \textbf{Tk}, \textbf{Sk}, \textbf{DTk} donde ya se realizó el truncamiento de tamaño k. Estamos asumiendo un k de tamaño 200 para colecciones de documentos grandes, en caso de colecciones más pequeñas se asume un k=$min(|docs|,|terms|)/5+1$. \\
+
+Para trabajar con la query esta se lleva a un vector del tamaño de la cantidad total de términos en los documentos, con 0 en los lugares en que ese término no se encuentre en la consulta y luego se realiza una transformación del vector de consulta $\vec{q}$ a su representación en el espacio LSI mediante: $\vec{q_{k}}=\vec{q}^{T}T_{k}S_{k}^{-1}$. Esto se computó utilizando las funciones de multiplicación de matrices, cálculo de la inversa y la transpuesta implementadas en la librería numpy. \\
+
+Para hallar la similitud término-documento se utiliza, al igual que en el modelo vectorial, el cálculo del coseno del ángulo entre los vectores de los documentos y el vector de la query $\vec{d_{j}}$ y $\vec{q_{k}}$ respectivamente, tomando como cada vector $\vec{d_{_{j}}}$ las columnas de \textbf{DTk}.
+
+
 
 
 \end{document}
