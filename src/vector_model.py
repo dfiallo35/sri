@@ -34,7 +34,7 @@ class VectorModel(Model):
         """
         self.clear([self.queryterms, self.querysim])
 
-        if not self.reuse_data() and not self.docterms:
+        if not self.reuse_data(dataset):
             self.dataset.build_dataset(dataset)
             self.data()
     
