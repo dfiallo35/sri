@@ -91,7 +91,6 @@ class ProbabilisticModel(Model):
     def sim(self, feedback: bool):
         """
         Computes the similarity between the query and the documents from the collection
-        takes as a constant value p_i = 0.5
         :get query_doc_sim: saves the similarity between the query and a documents
         """
         self.query_doc_sim.clear()
@@ -179,6 +178,7 @@ class ProbabilisticModel(Model):
     #                 else: # if at least one term has already been found common between the document and the query
     #                     # if self.term_p_r[term][1] > 0 and self.term_p_r[term][0] > 0: # if the values don't indetermine the log function
     #                     self.query_doc_sim[doc] = self.query_doc_sim[doc] + np.log10(idf_term) # sum the similarity already saved from the others terms that coincide in the document and the query 
+    #             
     #             else: # if the term in the document isn't a query term     
     #                 if not self.query_doc_sim.get(doc): # if the document hasn't been analyzed   
     #                     self.query_doc_sim[doc] = 0 # the current similarity between the doc and the query is 0
@@ -205,6 +205,7 @@ class ProbabilisticModel(Model):
     #                     self.query_doc_sim[doc] = np.log10((v_term + 0.5) / (rr_doc - v_term + 1)) + np.log10(idf_term) # similarity
     #                 else: # if at least one term has already been found common between the document and the query
     #                     self.query_doc_sim[doc] = self.query_doc_sim[doc] + np.log10((v_term + 0.5) / (rr_doc - v_term + 1)) + np.log10(idf_term) # similarity
+    #             
     #             else: # if the term in the document isn't a query term     
     #                 if not self.query_doc_sim.get(doc): # if the document hasn't been analyzed   
     #                     self.query_doc_sim[doc] = 0 # the current similarity between the doc and the query is 0
