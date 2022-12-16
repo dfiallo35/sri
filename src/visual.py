@@ -1,12 +1,14 @@
 import streamlit as st
+import streamlit.components.v1 as components
+
 from vector_model import Datasets, Model, VectorModel
 from probabilistic_model import ProbabilisticModel
 from latent_semantics_model import LSIModel
-import os
+
+from os.path import realpath, join, dirname
 from PIL import Image
 from time import time
-a= time()
-
+img_dir= realpath(join(dirname(__file__) ,'imgs'))
 
 #todo: use delta in F1
 #todo: use delta in metric for the arrow
@@ -25,7 +27,7 @@ class Visual:
         self.beta:float = None
 
         self.example_queries:str = None
-        self.input_type:str = None
+        self.mode:str = None
 
         self.queries:dict = dict()
         self.query:str= None
@@ -60,12 +62,40 @@ class Visual:
         self.search_box()
 
         if self.run:
-            init= time()
-            self.results= Visual.models()[self.method].run(query=self.query['query'], dataset=self.dataset, threshold=self.threshold)
-            end= time()
-            self.exe_time= round(end- init, 3)
-            self.show_results(self.results, Visual.models()[self.method])
-            self.metrics()
+
+            if self.mode == 'All queries':
+                all_metrics= dict()
+
+                progressbar = st.progress(0)
+                for add_progressbar, query in enumerate(self.queries):
+                    progressbar.progress(add_progressbar/ len(self.queries))
+
+                    self.query= self.queries[query]
+
+                    init= time()
+                    self.results= Visual.models()[self.method].run(query=self.query['query'], dataset=self.dataset, threshold=self.threshold)
+                    end= time()
+                    self.exe_time= round(end- init, 3)
+
+                    metrics= Datasets.eval(self.dataset, self.query['id'], self.results, B=self.beta)
+                    all_metrics[query]= metrics
+                
+                new_metrics= dict()
+                for metric in ['P', 'R', 'F', 'F1']:
+                    new_metrics[metric]= round(sum([all_metrics[query][metric] for query in all_metrics])/len(all_metrics), 3)
+
+                self.dataset_metrics(new_metrics)
+                progressbar.success('Done!')
+                progressbar.empty()
+                    
+            else:
+                init= time()
+                self.results= Visual.models()[self.method].run(query=self.query['query'], dataset=self.dataset, threshold=self.threshold)
+                end= time()
+                self.exe_time= round(end- init, 3)
+
+                self.show_results(self.results, Visual.models()[self.method])
+                self.metrics()
         else:
             self.empty_metrics()
 
@@ -74,7 +104,7 @@ class Visual:
         '''
         Show the logo of the app
         '''
-        img_dir= os.path.realpath(os.path.join(os.path.dirname(os.path.realpath(__file__)) , os.path.join('imgs', 'logo.png')))
+        img_dir= realpath(join(dirname(realpath(__file__)) , join('imgs', 'logo.png')))
         st.image(Image.open(img_dir), width= 200)
     
 
@@ -94,10 +124,10 @@ class Visual:
 
         self.sbar.title("Options")
         self.method= self.sbar.selectbox("Method", list(Visual.models().keys()))
-        self.dataset= self.sbar.selectbox("Dataset", ['cranfield', 'beir/arguana'])
+        self.dataset= self.sbar.selectbox("Dataset", ['cranfield', 'vaswani'])
 
         with self.sbar.expander(label='Options'):
-            self.input_type= st.selectbox("Input type", ["Example queries", "Text"])
+            self.mode= st.selectbox("Mode", ["Example queries", "Text", 'All queries'])
             self.threshold= st.slider("Threshold", min_value=0.0, max_value=1.0, value=0.2, step= 0.01)
             self.beta= st.slider('Beta', min_value=0.0, max_value=2.0, value=1.0, step= 0.01)
             
@@ -111,14 +141,14 @@ class Visual:
         '''
         Create the search box with the input type selected and the search button
         '''
-        if self.input_type == "Text":
+        if self.mode == "Text":
             col1, col2= st.columns([4,1])
             self.query= col1.text_input("", key="different")
             col2.text('')
             col2.text('')
             self.run= col2.button('Search')
 
-        if self.input_type == "Example queries":
+        if self.mode == "Example queries":
             col1, col2= st.columns([4,1])
 
             for q in zip(Datasets.print_query_data(self.dataset), Datasets.get_query_data(self.dataset)):
@@ -130,6 +160,14 @@ class Visual:
             col2.text('')
             col2.text('')
             self.run= col2.button('Search')
+        
+        if self.mode == 'All queries':
+            #todo: run the model for all the queries in the dataset
+            #todo: calculate the avg metrics
+            for q in zip(Datasets.print_query_data(self.dataset), Datasets.get_query_data(self.dataset)):
+                self.queries[q[0]]= q[1]
+            self.run= st.button('Search')
+            
 
     def empty_metrics(self):
         '''
@@ -164,6 +202,19 @@ class Visual:
         with self.sbar.expander('Documents Relevance'):
             st.dataframe(Datasets.get_qrels_coincidence(self.dataset, self.query['id'], self.results))
         
+    def dataset_metrics(self, metrics: dict):
+        '''
+        Show the metrics of the dataset
+        '''
+        with self.sbar.expander('Dataset Metrics', expanded=True):
+            c1, c2= st.columns([1,1])
+            c1.metric('P', round(metrics['P'], 3))
+            c2.metric('R', round(metrics['R'], 3))
+            c3, c4= st.columns([1,1])
+            c3.metric('F', round(metrics['F'], 3))
+            c4.metric('F1', round(metrics['F1'], 3))
+            st.metric('Execution Time', str(self.exe_time) + ' s')
+        
 
     def show_results(self, results, model: Model):
         '''
@@ -174,7 +225,8 @@ class Visual:
         docs = model.dataset.get_docs_data()
         for result in results:
             with st.expander(label=f'Document: {result[0]}'):
-                st.text('Title: ' + docs[int(result[0])-1]['title'])
+                if self.dataset != 'vaswani':
+                    st.text('Title: ' + docs[int(result[0])-1]['title'])
                 st.text(f"Similarity: {result[1]}")
                 st.text('Content:')
                 st.text(docs[int(result[0])-1]['text'])
