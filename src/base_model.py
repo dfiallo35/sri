@@ -2,6 +2,7 @@ from dataset import *
 from math import log
 import numpy as np
 
+#fix: dataset name to reuse
 class Model:
     def __init__(self):
         self.dataset= Datasets()
@@ -17,12 +18,12 @@ class Model:
     def query_data(self, query:str): ...
 
 
-    def reuse_data(self):
+    def reuse_data(self, dataset: str):
         '''
         Reuse the data of the dataset if it is already calculated
         :return: True if the data is reused, False if it is not
         '''
-        return self.dataset.docterms_dict or self.dataset.docterms_matrix
+        return self.dataset.dataset_name and self.dataset.dataset_name == dataset
     
     def clear(self, clearlist: list):
         '''
