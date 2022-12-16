@@ -3,7 +3,7 @@ from ir_datasets.datasets.base import Dataset
 from lexemizer import Lexemizer
 import numpy as np
 
-#fix: division by 0
+#fix: in get docs data vaswani has no title
 class Datasets:
     def __init__(self):
         self.dataset:Dataset= None
@@ -24,6 +24,7 @@ class Datasets:
         Build the dataset and get the documents
         :param dataset: dataset name
         '''
+        self.clean_data()
         self.dataset_name= dataset
 
         self.documents= []
@@ -32,6 +33,20 @@ class Datasets:
         for doc in self.dataset.docs_iter():
             self.documents.append(doc.doc_id)
         self.docslen= self.dataset.docs_count()
+    
+    def clean_data(self):
+        self.dataset:Dataset= None
+        if self.documents:
+            self.documents.clear()
+        if self.terms:
+            self.terms.clear()
+        self.docslen:int = 0
+        self.dataset_name:str = None
+        self.lexemizer= Lexemizer()
+        if self.docterms_matrix:
+            self.docterms_matrix.clear()
+        if self.docterms_dict:
+            self.docterms_dict.clear()
     
     def build_dataset_matrix(self, dataset:str):
         '''
@@ -159,6 +174,8 @@ class Datasets:
         '''
         :return: list of documents with their id, title and text
         '''
+        if self.dataset_name == 'vaswani':
+            return [{'id':data.doc_id, 'text':data.text} for data in self.dataset.docs_iter()]
         return [{'id':data.doc_id, 'text':data.text, 'title':data.title} for data in self.dataset.docs_iter()]
 
 
@@ -260,3 +277,5 @@ class Datasets:
                 new_qrel.append({'document':qr['doc'], 'relevance':qr['relevance'], 'coincidence':qr['coincidence']})
             
         return new_qrel
+
+
