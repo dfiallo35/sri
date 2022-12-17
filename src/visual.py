@@ -89,7 +89,6 @@ class Visual:
                 new_metrics= dict()
                 for metric in ['P', 'R', 'F', 'F1', 'time']:
                     new_metrics[metric]= round(sum([all_metrics[query][metric] for query in all_metrics])/len(all_metrics), 3)
-
                 self.dataset_metrics(new_metrics)
                 progressbar.empty()
                     
@@ -101,6 +100,7 @@ class Visual:
 
                 self.show_results(self.results, Visual.models()[self.method])
                 self.metrics()
+        
         else:
             self.empty_metrics()
 
@@ -212,7 +212,7 @@ class Visual:
         c3, c4= st.columns([1,1])
         c3.metric('F', round(metrics['F'], 3))
         c4.metric('F1', round(metrics['F1'], 3))
-        st.metric('Execution Time', str(metrics['time']) + ' s')
+        st.metric('AVG Execution Time', str(metrics['time']) + ' s')
         
 
 
