@@ -1,5 +1,11 @@
 import streamlit as st
 import streamlit.components.v1 as components
+st.set_page_config(
+    page_title="Information Retrieval",
+    page_icon="A",
+        layout="wide",
+        initial_sidebar_state="expanded",
+    )
 
 from vector_model import Datasets, Model, VectorModel
 from probabilistic_model import ProbabilisticModel
