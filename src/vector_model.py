@@ -36,6 +36,7 @@ class VectorModel(Model):
 
         if not self.reuse_data(dataset):
             self.dataset.build_dataset(dataset)
+            self.clear([self.docterms])
             self.data()
     
         return self.find(query, threshold, alpha)

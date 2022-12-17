@@ -24,6 +24,8 @@ class LSIModel(VectorModel):
         self.k=k
         if not self.reuse_data(dataset) and not self.Sk:
             self.dataset.build_dataset_matrix(dataset)
+            self.clear([self.docterms])
+            
             if(len(self.dataset.documents)<k):
                 k=len(self.dataset.documents)/5
             if(len(self.dataset.documents) < k or len(self.dataset.terms) < k):

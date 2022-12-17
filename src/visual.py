@@ -209,7 +209,7 @@ class Visual:
         st.metric('Execution Time', str(metrics['time']) + ' s')
         
 
-    #bug: list index out of range
+
     def show_results(self, results, model: Model):
         '''
         Show the results of the search

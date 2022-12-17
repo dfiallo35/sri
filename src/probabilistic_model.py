@@ -24,6 +24,7 @@ class ProbabilisticModel(Model):
 
         if not self.reuse_data(dataset):
             self.dataset.build_dataset(dataset)
+            self.clear([self.term_docs, self.term_p_r])
             self.data()
 
         return self.find(query, threshold)
