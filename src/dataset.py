@@ -227,17 +227,9 @@ class Datasets:
         ni= ndocs - len(results) - len(qrel) + rr
 
         return {'RR':rr, 'RI':ri, 'NR':nr, 'NI':ni}
+    
 
-    def eval(dataset: str, id: str, result: list, B: int=1):
-        '''
-        :param dataset: dataset name
-        :param id: query id
-        :param result: list of results of the query with the doc id and the similarity
-        :param B: beta value
-        :return: dictionary with P, R, F1 and F
-        '''
-        params= Datasets.get_eval_params(dataset, id, result)
-        
+    def eval_calc(params: dict, B: int=1):
         if (params['RR'] + params['RI']) == 0:
             p=0
         else:
@@ -257,6 +249,16 @@ class Datasets:
 
         return {'P':p, 'R':r, 'F':f, 'F1':f1}
 
+    def eval(dataset: str, id: str, result: list, B: int=1):
+        '''
+        :param dataset: dataset name
+        :param id: query id
+        :param result: list of results of the query with the doc id and the similarity
+        :param B: beta value
+        :return: dictionary with P, R, F1 and F
+        '''
+        params= Datasets.get_eval_params(dataset, id, result)
+        return Datasets.eval_calc(params, B)
 
     def get_qrels_coincidence(dataset: str, id:str, results: list) -> list:
         '''

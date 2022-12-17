@@ -38,8 +38,6 @@ class Visual:
         self.query:str= None
 
         self.run:bool= False
-        self.results:list= None
-        self.exe_time:float= None
 
 
     @st.cache(suppress_st_warning=False, allow_output_mutation=True)
@@ -69,8 +67,9 @@ class Visual:
         if self.run:
 
             if self.mode == 'All queries':
-                all_metrics= dict()
-
+                
+                exe_time= 0
+                all_metrics= {'RR':0, 'RI':0, 'NR':0, 'NI':0}
                 progressbar = st.progress(0)
                 for add_progressbar, query in enumerate(self.queries):
                     progressbar.progress(add_progressbar/ len(self.queries))
@@ -78,28 +77,27 @@ class Visual:
                     self.query= self.queries[query]
 
                     init= time()
-                    self.results= Visual.models()[self.method].run(query=self.query['query'], dataset=self.dataset, threshold=self.threshold)
+                    results= Visual.models()[self.method].run(query=self.query['query'], dataset=self.dataset, threshold=self.threshold)
                     end= time()
-                    self.exe_time= round(end- init, 3)
+                    exe_time+= round(end- init, 3)
 
-                    metrics= Datasets.eval(self.dataset, self.query['id'], self.results, B=self.beta)
-                    metrics.update({'time': self.exe_time})
-                    all_metrics[query]= metrics
-                
-                new_metrics= dict()
-                for metric in ['P', 'R', 'F', 'F1', 'time']:
-                    new_metrics[metric]= round(sum([all_metrics[query][metric] for query in all_metrics])/len(all_metrics), 3)
-                self.dataset_metrics(new_metrics)
+                    eval_params= Datasets.get_eval_params(self.dataset, self.query['id'], results)
+                    for param in eval_params:
+                        all_metrics[param]+= eval_params[param]
+
                 progressbar.empty()
+                metrics= Datasets.eval_calc(all_metrics, self.beta)
+                metrics['TIME']= round(exe_time/len(self.queries), 3)
+                self.dataset_metrics(metrics)
                     
             else:
                 init= time()
-                self.results= Visual.models()[self.method].run(query=self.query['query'], dataset=self.dataset, threshold=self.threshold)
+                results= Visual.models()[self.method].run(query=self.query['query'], dataset=self.dataset, threshold=self.threshold)
                 end= time()
-                self.exe_time= round(end- init, 3)
+                exe_time= round(end- init, 3)
 
-                self.show_results(self.results, Visual.models()[self.method])
-                self.metrics()
+                self.show_results(results, Visual.models()[self.method])
+                self.metrics(exe_time, results)
         
         else:
             self.empty_metrics()
@@ -181,22 +179,22 @@ class Visual:
         with st.sidebar.expander('Documents Relevance'):
             st.text('')
 
-    def metrics(self):
+    def metrics(self, exe_time, results):
         '''
         Show the metrics of the results
         '''
         with st.sidebar.expander('Metrics', expanded=True):
-            metrics= Datasets.eval(self.dataset, self.query['id'], self.results, B=self.beta)
+            metrics= Datasets.eval(self.dataset, self.query['id'], results, B=self.beta)
             c1, c2= st.columns([1,1])
             c1.metric('P', round(metrics['P'], 3))
             c2.metric('R', round(metrics['R'], 3))
             c3, c4= st.columns([1,1])
             c3.metric('F', round(metrics['F'], 3))
             c4.metric('F1', round(metrics['F1'], 3))
-            st.metric('Execution Time', str(self.exe_time) + ' s')
+            st.metric('Execution Time', str(exe_time) + ' s')
         
         with st.sidebar.expander('Documents Relevance'):
-            st.dataframe(Datasets.get_qrels_coincidence(self.dataset, self.query['id'], self.results))
+            st.dataframe(Datasets.get_qrels_coincidence(self.dataset, self.query['id'], results))
         
     def dataset_metrics(self, metrics: dict):
         '''
@@ -212,7 +210,7 @@ class Visual:
         c3, c4= st.columns([1,1])
         c3.metric('F', round(metrics['F'], 3))
         c4.metric('F1', round(metrics['F1'], 3))
-        st.metric('AVG Execution Time', str(metrics['time']) + ' s')
+        st.metric('AVG Execution Time', str(metrics['TIME']) + ' s')
         
 
 
