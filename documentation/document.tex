@@ -41,14 +41,16 @@
 
 	\begin{multicols}{2}
 		\begin{figure}[H]
-			\includegraphics[scale=0.5]{visual.jpg}
+			\includegraphics[scale=0.5]{sidebar.png}
 		\end{figure}	
 	
 		Aparece primeramente un \texttt{selectbox} para alternar entre los modelos de recuperación de información presentados.\\
 
 		Luego aparece otro \texttt{selectbox} para seleccionar el set de datos del cual se quiere hacer la consulta.\\
 
-		Más abajo se presenta una ventada desplegable con las opciones de alternar el método para recibir la entrada de la consulta (entre una entrada de texto clásica o un conjunto de consultas predeterminado). Además, se puede cambiar tanto el límite como el umbral de los resultados que se devuelven.\\
+		El tercer \texttt{selectbox}(Mode) nos brinda la opci'on de alternar entre diferentes modos para usar la aplicación. Con la entrada clásica de texto, entrada de consultas de ejemplo y un modo especial para calcular las métricas del modelo seleccionado en un dataset. \\
+
+		Más abajo se presenta una ventada desplegable con las opciones para la recuperación.\\
 
 		Bajo la línea va a estar una ventana desplegable que cuando se tengan los resultados de la consulta nos dará los resultados de las métricas.\\
 
@@ -60,7 +62,7 @@
 		Mientras, del lado derecho de esta barra se mostrará la selección de consulta y los resultados de esta en ventanas desplegables en las cuales se da es título del documento, su contenido y su similitud con la consulta.
 
 		\begin{figure}[H]
-			\includegraphics[scale=0.38]{visual_ex.jpg}
+			\includegraphics[scale=0.38]{fullscreen.png}
 		\end{figure}
 		
 	\section*{Modelo Base}
@@ -95,7 +97,30 @@
 		\texttt{Lexemizer}: Este se encuentra en \texttt{lexemizer.py}. Apoyándose de las facilidades del módulo \texttt{nltk}, este está destinado a normalizar los términos de los documentos y de las consultas; separando las palabras en \emph{tokens} independientes, eliminado las \emph{stopwords}, eliminando las mayúsculas y \emph{lematizando} los términos, y para el caso de las consultas también se le aplica una expansión de consulta usando \texttt{wordnet} para agregar sinónimos de los términos.\\
 
 		Visual: Se encuentra en \texttt{visual.py} y se encarga de llevar todo el proceso visual del proyecto.
-	
+
+		\subsection*{Evaluación}
+
+			Para todos los modelos es posible evaluar los resultados obtenidos por cada consulta con las sigientes métricas:
+		
+		\begin{equation}
+			\displaystyle P = \frac{|RR| }{| RR \cup  RI |}
+		\end{equation}
+
+		\begin{equation}
+			\displaystyle R = \frac{|RR| }{| RR \cup  NR |}
+		\end{equation}
+
+		\begin{equation}
+			\displaystyle F= \frac{1+\beta^2}{\frac{1}{P}+ \frac{\beta^2}{R}}
+		\end{equation}
+
+		\begin{equation}
+			\displaystyle F1= \frac{2}{\frac{1}{P}+ \frac{1}{R}}
+		\end{equation}
+
+		Además de medir el tiempo de ejecución del modelo. También es posible evaluar todo el conjunto de consultas del set de datos y calcular las metricas para la unión de los resultados. Esto ses posible en el proyecto en la opción \texttt{All queries} de \texttt{Mode}.
+ 
+
 	\section*{Modelo Vectorial}
 
 		Como ya vimos anteriormente, la implementación del Modelo Vectorial va a heredar de la clase \texttt{Model}, siguiendo pasos similares al resto de modelos. En un principio, al inicializar el modelo se crean 3 \texttt{dict} vacíos, los cuales van a ser usados más adelante, siendo estos:\\
@@ -146,6 +171,35 @@
 		\end{equation}
 
 		Luego se devuelve un \emph{ranking} organizado por similitud y eliminando los que sean cero, o en caso de existir un umbral los que estén por encima de este.
+
+
+			\subsection*{Evaluación}
+
+				Para el set de datos Cranfield, al calcular las métricas para todas las consultas tuvimos los siguientes resultados: 
+				Un tiempo de ejecución promedio de unos 0.115 segundos por consulta. 
+				Según la fórmula de $F1$ se logra una mejor calificación, de $0.161$ para un umbral de $0.4$ con $Precisión= 0.13$ y $Recobrado= 0.213$, probando desde umbral $0.1$ hasta $0.4$ 
+				ganando $10$ veces más precisión pero pasando de recobrado $0.87$ a $0.213$.\\
+
+				Para el caso de Vaswani............
+
+
+			\subsection*{Ventajas}
+				
+				\begin{itemize}
+					\item Tiene en cuenta el peso de $tf$ - $idf$ para la representacióm de los documentos.
+					\item Modelo eficiente para generar rankings en colecciones de gran tamaño.
+				\end{itemize}	
+
+
+			\subsection*{Desventajas}
+
+			\begin{itemize}
+				\item Necesita de la intersección de los términos de la consulta con los documentos, en caso contrario no se produce la recuperación de información.
+				\item Asume que los términos son independientes entre ellos.
+			\end{itemize}
+
+
+
 
 		\section*{Modelo Probabilístico}
 
