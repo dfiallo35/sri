@@ -201,7 +201,7 @@ class Datasets:
         :param id: query id
         :return: list of qrels with their query id, doc id and relevance
         '''
-        qrel= [{'query':data.query_id, 'doc':data.doc_id, 'relevance':data.relevance} for data in load(dataset).qrels_iter() if data.query_id == id]
+        qrel= [{'query':data.query_id, 'doc':data.doc_id, 'relevance':data.relevance} for data in load(dataset).qrels_iter() if data.query_id == id and int(data.relevance) > 0]
         return sorted(qrel, key=lambda x: x['relevance'])
     
 

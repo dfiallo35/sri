@@ -1,8 +1,7 @@
 import streamlit as st
 import streamlit.components.v1 as components
 st.set_page_config(
-    page_title="Information Retrieval",
-    page_icon="A",
+        page_title="Information Retrieval",
         layout="wide",
         initial_sidebar_state="expanded",
     )
