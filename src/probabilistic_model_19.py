@@ -119,17 +119,7 @@ class ProbabilisticModel(Model):
                     
                     if not self.query_doc_sim.get(doc): # if the document hasn't been analyzed   
                         self.query_doc_sim[doc] = 0 # the current similarity between the doc and the query is 0
-        
-        # Normalize similarity values
-        max = 0
-        for doc in self.query_doc_sim:
-            if self.query_doc_sim[doc] > max:
-                max = self.query_doc_sim[doc]
-        
-        if max != 0:
-            for doc in self.query_doc_sim:
-                self.query_doc_sim[doc] = self.query_doc_sim[doc] / max
-            	
+
 
     def pseudo_feedback_p_r(self, rank: list):
         """"
@@ -194,16 +184,6 @@ class ProbabilisticModel(Model):
     #                 if not self.query_doc_sim.get(doc): # if the document hasn't been analyzed   
     #                     self.query_doc_sim[doc] = 0 # the current similarity between the doc and the query is 0
     
-    #    # Normalize similarity values
-    #    max = 0
-    #    for doc in self.query_doc_sim:
-    #        if self.query_doc_sim[doc] > max:
-    #            max = self.query_doc_sim[doc]
-    #    
-    #    if max != 0:
-    #       for doc in self.query_doc_sim:
-    #            self.query_doc_sim[doc] = self.query_doc_sim[doc] / max
-    
     
     # def sim_feedback(self, feedback: bool, rank: list):
     #     """
@@ -230,13 +210,3 @@ class ProbabilisticModel(Model):
     #             else: # if the term in the document isn't a query term     
     #                 if not self.query_doc_sim.get(doc): # if the document hasn't been analyzed   
     #                     self.query_doc_sim[doc] = 0 # the current similarity between the doc and the query is 0
-    
-    #    # Normalize similarity values
-    #    max = 0
-    #    for doc in self.query_doc_sim:
-    #        if self.query_doc_sim[doc] > max:
-    #            max = self.query_doc_sim[doc]
-    #    
-    #    if max != 0:
-    #       for doc in self.query_doc_sim:
-    #            self.query_doc_sim[doc] = self.query_doc_sim[doc] / max
