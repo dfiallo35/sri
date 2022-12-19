@@ -48,7 +48,7 @@
 
 		Luego aparece otro \texttt{selectbox} para seleccionar el set de datos del cual se quiere hacer la consulta.\\
 
-		El tercer \texttt{selectbox}(Mode) nos brinda la opci'on de alternar entre diferentes modos para usar la aplicación. Con la entrada clásica de texto, entrada de consultas de ejemplo y un modo especial para calcular las métricas del modelo seleccionado en un dataset. \\
+		El tercer \texttt{selectbox}(Mode) nos brinda la opción de alternar entre diferentes modos para usar la aplicación. Con la entrada clásica de texto, entrada de consultas de ejemplo y un modo especial para calcular las métricas del modelo seleccionado en un \texttt{dataset}. \\
 
 		Más abajo se presenta una ventada desplegable con las opciones para la recuperación.\\
 
@@ -100,7 +100,7 @@
 
 		\subsection*{Evaluación}
 
-			Para todos los modelos es posible evaluar los resultados obtenidos por cada consulta con las sigientes métricas:
+			Para todos los modelos es posible evaluar los resultados obtenidos por cada consulta con las siguientes métricas:
 		
 		\begin{equation}
 			\displaystyle P = \frac{|RR| }{| RR \cup  RI |}
@@ -118,7 +118,7 @@
 			\displaystyle F1= \frac{2}{\frac{1}{P}+ \frac{1}{R}}
 		\end{equation}
 
-		Además de medir el tiempo de ejecución del modelo. También es posible evaluar todo el conjunto de consultas del set de datos y calcular las metricas para la unión de los resultados. Esto ses posible en el proyecto en la opción \texttt{All queries} de \texttt{Mode}.
+		Además de medir el tiempo de ejecución del modelo. También es posible evaluar todo el conjunto de consultas del set de datos y calcular las métricas para la unión de los resultados. Esto ses posible en el proyecto en la opción \texttt{All queries} de \texttt{Mode}.
  
 
 	\section*{Modelo Vectorial}
@@ -186,8 +186,8 @@
 			\subsection*{Ventajas}
 				
 				\begin{itemize}
-					\item Tiene en cuenta el peso de $tf$ - $idf$ para la representacióm de los documentos.
-					\item Modelo eficiente para generar rankings en colecciones de gran tamaño.
+					\item Tiene en cuenta el peso de $tf$ - $idf$ para la representación de los documentos.
+					\item Modelo eficiente para generar \emph{rankings} en colecciones de gran tamaño.
 				\end{itemize}	
 
 
@@ -273,7 +273,7 @@ El modelo de Indexación Semántica Latente es un modelo de recuperación de inf
 
 La ISL se basa en el principio de que las palabras que se utilizan en el mismo contexto tienden a tener significados similares. La característica fundamental de la ISL es su habilidad para extraer el contenido conceptual de un documento, estableciendo asociaciones entre aquellos términos que ocurran en contextos similares. \\
 
-Para el análisis ISL primero se construye una matriz ${\displaystyle A_{k}}$ donde las filas representan los términos y las columnas los documentos, esta matriz establece las relaciones término documento por lo que cada elemento  $x_{ij}$  representa el peso del término \textit{i} en el documento \textit{j}. Estos pesos en este caso son el número de ocurrencias del término \textit{i} en el documento \textit{j} y están contenidos en la matriz \textbf{A} que se calcula en la clase dataset.\\
+Para el análisis ISL primero se construye una matriz ${\displaystyle A_{k}}$ donde las filas representan los términos y las columnas los documentos, esta matriz establece las relaciones término documento por lo que cada elemento  $x_{ij}$  representa el peso del término \textit{i} en el documento \textit{j}. Estos pesos en este caso son el número de ocurrencias del término \textit{i} en el documento \textit{j} y están contenidos en la matriz \textbf{A} que se calcula en la clase \texttt{dataset}.\\
 
 El objetivo fundamental de LSI es encontrar una matriz ${\displaystyle A_{k}}$ que constituya una aproximación a la matriz Términos-Documentos ${\displaystyle A}$. En esa aproximación se va a obtener información que no estaba disponible directamente en la matriz ${\displaystyle A}$, sino que se encontraba latente en esta. Esta matriz debe cumplir que el rango debe ser al menos ${\displaystyle k}$, donde ${\displaystyle k}$ es mucho menor que el rango de ${\displaystyle A}$. En este caso decimos que ${\displaystyle A_{k}}$ es una aproximación de rango bajo.\\
 
@@ -316,9 +316,9 @@ Donde $\vec{u_{i}}$ y $\vec{v_{i}}$ son las \textit{i}-ésimas columnas de T y D
 
 En nuestro código guardamos como parte de la clase LSI las matrices  \textbf{Tk}, \textbf{Sk}, \textbf{DTk} donde ya se realizó el truncamiento de tamaño k. Estamos asumiendo un k de tamaño 200 para colecciones de documentos grandes, en caso de colecciones más pequeñas se asume un k=$min(|docs|,|terms|)/5+1$. \\
 
-Para trabajar con la query esta se lleva a un vector del tamaño de la cantidad total de términos en los documentos, con 0 en los lugares en que ese término no se encuentre en la consulta y luego se realiza una transformación del vector de consulta $\vec{q}$ a su representación en el espacio LSI mediante: $\vec{q_{k}}=\vec{q}^{T}T_{k}S_{k}^{-1}$. Esto se computó utilizando las funciones de multiplicación de matrices, cálculo de la inversa y la transpuesta implementadas en la librería numpy. \\
+Para trabajar con la \emph{query} esta se lleva a un vector del tamaño de la cantidad total de términos en los documentos, con 0 en los lugares en que ese término no se encuentre en la consulta y luego se realiza una transformación del vector de consulta $\vec{q}$ a su representación en el espacio LSI mediante: $\vec{q_{k}}=\vec{q}^{T}T_{k}S_{k}^{-1}$. Esto se computó utilizando las funciones de multiplicación de matrices, cálculo de la inversa y la transpuesta implementadas en la librería \texttt{numpy}. \\
 
-Para hallar la similitud término-documento se utiliza, al igual que en el modelo vectorial, el cálculo del coseno del ángulo entre los vectores de los documentos y el vector de la query $\vec{d_{j}}$ y $\vec{q_{k}}$ respectivamente, tomando como cada vector $\vec{d_{_{j}}}$ las columnas de \textbf{DTk}.
+Para hallar la similitud término-documento se utiliza, al igual que en el modelo vectorial, el cálculo del coseno del ángulo entre los vectores de los documentos y el vector de la \emph{query} $\vec{d_{j}}$ y $\vec{q_{k}}$ respectivamente, tomando como cada vector $\vec{d_{_{j}}}$ las columnas de \textbf{DTk}.
 
 
 

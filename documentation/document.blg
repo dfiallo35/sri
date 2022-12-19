@@ -1,0 +1,8 @@
+[0] Config.pm:254> INFO - This is biber 0.9.5
+[0] Config.pm:257> INFO - Logfile is 'document.blg'
+[1] biber-MSWIN:105> INFO - === %a %b %e, %Y, %H:%M:%S
+[1] Biber.pm:305> INFO - Reading 'document.bcf'
+[45] Biber.pm:607> INFO - Found 0 citekeys in bib section 0
+[45] Biber.pm:624> WARN - The file 'document.bcf' does not contain any citations!
+[61] BBL.pm:387> INFO - Writing 'document.bbl' with encoding 'UTF-8'
+[61] BBL.pm:450> INFO - Output to document.bbl
