@@ -84,6 +84,7 @@
 				\item \textbf{Etapa 7:} Devolver \emph{ranking} de documentos.
 
 			\end{itemize}
+			waeacec
 
 	\section*{Implementación del código y herramientas usadas}
 		
