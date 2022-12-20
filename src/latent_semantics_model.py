@@ -9,7 +9,7 @@ class LSIModel(VectorModel):
         self.k:int
         self.DTk= None
         self.Sk= None
-        self.Uk= None
+        self.Tk= None
 
     def run(self, query:str, dataset:str, threshold:float= None, k:int = 200) -> list:
         """
@@ -24,7 +24,7 @@ class LSIModel(VectorModel):
         self.k=k
         if not self.reuse_data(dataset):
             self.dataset.build_dataset_matrix(dataset)
-            self.clear([self.docterms, self.DTk, self.Sk, self.Uk])
+            self.clear([self.docterms, self.DTk, self.Sk, self.Tk])
 
             if(len(self.dataset.documents)<k):
                 k=len(self.dataset.documents)/5
@@ -74,10 +74,25 @@ class LSIModel(VectorModel):
         terms_docs_matrix = self.dataset.terms_docs_frequency_matrix
         T, S, DT = np.linalg.svd(terms_docs_matrix)
 
-        S = np.diag(S)
-        self.Tk = T[0:len(T),0:k]
-        self.Sk = S[0:k,0:k]
-        self.DTk = DT[0:k,0:len(DT)] 
+        # S = np.diag(S)
+        # self.Tk = T[0:len(T),0:k]
+        # self.Sk = S[0:k,0:k]
+        # self.DTk = DT[0:k,0:len(DT)] 
+
+        self.Sk=[]
+        self.Tk=[]
+        self.DTk=[]
+        T=T.transpose()        
+        for ki in range(k):
+            i=S.argmax()            
+            self.Tk.append(T[i,0:len(T)])
+            self.Sk.append(S[i])
+            self.DTk.append(DT[i,0:len(DT)])
+            S[i]=-1000
+        self.Tk=np.array(self.Tk).transpose()
+        self.Sk=np.array(self.Sk)
+        self.DTk=np.array(self.DTk)        
+        self.Sk = np.diag(self.Sk)
 
 
     def query_data(self, query:str):
