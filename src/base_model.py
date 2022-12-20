@@ -31,7 +31,7 @@ class Model:
         :param clearlist: list of elements to clear
         '''
         for element in clearlist:
-            if element:
+            if element != None:
                 element.clear()
     
     def ranking(self, threshold: float, querysim: dict) -> list:
