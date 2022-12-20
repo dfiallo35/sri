@@ -322,6 +322,56 @@ Para trabajar con la \emph{query} esta se lleva a un vector del tamaño de la ca
 Para hallar la similitud término-documento se utiliza, al igual que en el modelo vectorial, el cálculo del coseno del ángulo entre los vectores de los documentos y el vector de la \emph{query} $\vec{d_{j}}$ y $\vec{q_{k}}$ respectivamente, tomando como cada vector $\vec{d_{_{j}}}$ las columnas de \textbf{DTk}.
 
 
+Los resultados de este modelo son generalmente superiores a los que tienen encuenta solamente la frecuencia de términos. Sin embargo, es necesario un mayor desarrollo para que este enfoque sea lo suficientemente rápido para su uso en grandes sistemas de recuperación. 
+
+\subsection*{Evaluación}
+
+Para el set de datos Cranfield, al calcular las métricas para todas las consultas tuvimos los siguientes resultados: 
+
+\begin{itemize}
+
+\item Un tiempo de ejecución promedio de unos 1394 segundos por consulta contando el tiempo que se toma hacer la descomposición SVD inicial.
+
+ \item Se hicieron pruebas para un umbral de 0.2 y 0.4 obteniéndose : $Precisión_{0.2}=0.07 $, $Recobrado_{0.2}= 0.41$, $Fmedida_{0.2}=0.12$, $Precisión_{0.4}=0.214 $, $Recobrado_{0.4}= 0.104$, $Fmedida_{0.4}=0.14$ donde se puede notar que en dependencia del umbral que se utilice existe una diferencia notable entre los valores de precisión y recobrado, pero en el caso de la medida F no existe tan grande diferencia, por lo que por ella se puede estimar con menor error la calidad de la recuperación.
+ 
+\end{itemize}
+ 
+
+Para el set de datos Vaswani, al calcular las métricas para todas las consultas tuvimos los siguientes resultados: 
+
+\begin{itemize}
+
+\item En este caso la demora de la ejecución de la recuperación es considerablemente alta debido a la gran cantidad de documentos que tiene este dataset unido a la complejidad temporal del modelo, tomando un tiempo estimado de 14 425s por consulta.
+
+\item Tomando los umbrales 0.2 y 0.4 se obtuvieron los siguientes resultados $Precisión_{0.2}=0.029 $, $Recobrado_{0.2}= 0.528$, $Fmedida_{0.2}=0.054$, $Precisión_{0.4}=0.079 $, $Recobrado_{0.4}= 0.186$, $Fmedida_{0.4}=0.112$ donde además de la gran diferencia entre las precisiones calculadas para los respectivos umbrales también la medida F indica que para esta colección grande es mejor exigir una mayor similitud entre los documentos y las consultas utilizando el valor de umbral 0.4 para maximizar esta medida sin que represente una disminución significativa del recobrado.
+
+\end{itemize}
+
+
+\subsection*{Ventajas}
+ 
+\begin{itemize}
+ \item Una gran ventaja de LSI es que es un enfoque estrictamente matemático, sin conocimiento del significado de los documentos o palabras que analiza. Esto lo hace una técnica poderosa y genérica capaz de indexar cualquier colección coherente de documentos en cualquier lenguaje. 
+
+\item  El modelo tradicional del modelo vectorial se asume independencia de términos. Mientras que en LSI si se trabaja con dependencia entre los términos y más que eso, la mayor ventaja de LSI es la sinonimia y la polisemia.
+
+\item La solución LSI solo necesita construirse una única vez para toda la colección y el rendimiento en el momento de la recuperación no sufre. 
+
+\item En el espacio semántico latente, una consulta y un documento pueden tener una alta similitud incluso sin términos comunes, siempre que sean semánticamente similares.
+
+
+\end{itemize}
+
+\subsection*{Desventajas}
+
+\begin{itemize}
+ \item El costo espacial y temporal es muy alto comparado con otras técnicas como en este caso el modelo probabilístico y el vectorial, donde LSI ocupa mucho más espacio en memoria y demora más tiempo en devolver el ranking que eslos modelo. De esta manera resulta imposible aplicar el modelo a grandes colecciones de elementos, aunque es cierto que con procesadores de alta velocidad y de gran memoria disminuiría un poco este problema.
+ 
+\item El valor óptimo de la nueva dimensión a utilizar, nuestro k, es otro problema, pues para colecciones de más o menos documentos puede ser mejor la utilización de un k que de otro.
+ 
+\end{itemize}
+
+
 
 
 \end{document}
