@@ -4,7 +4,7 @@
 
 \normalsize
 
-\parindent = 0mm 
+%\parindent = 0mm 
 
 \usepackage{lmodern}
 \usepackage[a4paper]{geometry}
@@ -56,7 +56,6 @@
 
 		Mientras que más abajo se podrán ver de la consulta actual los documentos que son realmente relevantes, cuan relevantes con en realidad además de decir si este fue recuperado por el modelo seleccionado o no.\\
 	\end{multicols}
-		
 		
 
 		Mientras, del lado derecho de esta barra se mostrará la selección de consulta y los resultados de esta en ventanas desplegables en las cuales se da es título del documento, su contenido y su similitud con la consulta.
@@ -175,14 +174,14 @@
 
 			\subsection*{Evaluación}
 
-				Para el set de datos Cranfield, al calcular las métricas para todas las consultas tuvimos los siguientes resultados: 
+				Para el \emph{set} de datos \emph{Cranfield}, al calcular las métricas para todas las consultas tuvimos los siguientes resultados: 
 				Un tiempo de ejecución promedio de unos 0.115 segundos por consulta. 
-				Según la fórmula de $F1$ se logra una mejor calificación, de $0.161$ para un umbral de $0.4$ con $Precisión= 0.13$ y $Recobrado= 0.213$, probando desde umbral $0.1$ hasta $0.4$ 
+				Según la medida $F1$ se logra una mejor calificación, de $0.161$ para un umbral de $0.4$ con $Precisión= 0.13$ y $Recobrado= 0.213$, probando desde umbral $0.1$ hasta $0.4$ 
 				ganando $10$ veces más precisión pero pasando de recobrado $0.87$ a $0.213$.\\
 
-				Para el caso de del set de datos Vaswani se hicieron pruebas de umbral $0.2$ a $0.45$ donde se pudo notar un gran aumento en precisión en umbral $0.4$, mientras que a partir de este punto era mucho mayor la perdida de documentos que la precisión que aumentaba.
-				Por tanto se decidió usar para este caso umbral $0.4$, donde se logra un $Precisión= 0.043$ y $Recobrado=0.253$ para una calificación de $F1= 0.073$ con un tiempo de ejecución promedio de $0.75$ segundos.
+				Para el caso de del set de datos \emph{Vaswani} se hicieron pruebas de umbral $0.2$ a $0.45$ donde se pudo notar un gran aumento en precisión en umbral $0.4$, mientras que a partir de este punto era mucho mayor la perdida de documentos que la precisión que aumentaba.
 
+				Por tanto se decidió usar para este caso umbral $0.4$, donde se logra un $Precisión= 0.043$ y $Recobrado=0.253$ para una calificación de $F1= 0.073$ con un tiempo de ejecución promedio de $0.75$ segundos.
 
 			\subsection*{Ventajas}
 				
@@ -198,8 +197,6 @@
 				\item Necesita de la intersección de los términos de la consulta con los documentos, en caso contrario no se produce la recuperación de información.
 				\item Asume que los términos son independientes entre ellos.
 			\end{itemize}
-
-
 
 
 		\section*{Modelo Probabilístico}
@@ -265,7 +262,37 @@
 			
 			Una vez obtenidos los nuevos valores de $ p_i, r_i $ la similitud será computada nuevamente y se retornará un \emph{ranking} en base a esta.\\
 
-			Este proceso donde se calculan nuevamente las probabilidades de ocurrencia de los términos en documentos relevantes o no, se analiza la similitud y se devuelve un \emph{ranking} se realizará en tres ocasiones. El último \emph{ranking} calculado será retornado como respuesta del algoritmo y se tendrá en cuenta para este si es establecido un umbral para la similitud.
+			Se realizarán dos iteraciones donde se calculan nuevamente las probabilidades de ocurrencia de los términos en documentos relevantes o no, se analiza la similitud y se devuelve un \emph{ranking}. El último \emph{ranking} calculado será retornado como respuesta del algoritmo y se tendrá en cuenta para este si es establecido un umbral para la similitud.
+
+%			Al hacer más de dos iteraciones de pseudo-retroalimentación no se recuperaban documentos.
+		
+		\subsection*{Evaluación}
+			
+			Se analizaron todas las consultas con los valores de umbral: 0.20, 0.30 y 0.40.\\
+ 
+			Para el \emph{set} de datos \emph{Cranfield} se obtuvo un promedio de tiempo de ejecución de 0.419$ s $ por consulta con el valor del umbral igual a 0.20. En cuanto a las métricas objetivas se obtuvieron los siguientes valores: medida F1 igual 0.03, precisión igual 0.016 y recobrado igual a 0.196, este último el mayor alcanzado en las pruebas.
+
+			Para el umbral igual a 0.30 con tiempo de ejecución promedio de  0.338$s $ obtuvimos la mejor medida $ F1 $: 0.31, mientras que de precisión y recobrado valores iguales a 0.019 y 0.083 respectivamente.
+
+			En el caso del umbral igual a 0.40 con tiempo de ejecución promedio de 0.281$ s $, fue con el que mayor valor de  precisión se obtuvo: 0.2; sin embargo, el recobrado disminuyó alcanzando un 0.037 al igual que la medida $ F1 $ con un 0.026.\\
+
+			Para el \emph{set} de datos \emph{Vaswani} se obtuvo un promedio de tiempo de ejecución de 3.947$ s $ por consulta con umbral igual a 0.20. En cuanto a las métricas objetivas se obtuvieron los siguientes valores: medida F1 igual 0.034, precisión igual 0.018 y recobrado igual a 0.2. En cuanto a la medida $ F1 $ y el recobrado fueron los mejores valores logrados.
+
+			Para el umbral igual a 0.30 con tiempo de ejecución promedio de  1.314$ s $ obtuvimos medida $ F1 $: 0.31, mientras que de precisión y recobrado valores iguales a 0.019 y 0.073 respectivamente.
+
+			En el caso del umbral igual a 0.40 con tiempo de ejecución promedio de 0.773$ s $, fue con el que mayor valor de  precisión se obtuvo: 0.2, el recobrado fue igual a 0.036 y la medida $ F1 $ resultante fue de 0.26.
+
+		\subsection*{Ventajas}
+			\begin{itemize}
+				\item Devuelve un \emph{ranking} de los documentos.
+				\item No requiere mucha memoria para su procesamiento.
+			\end{itemize}
+		\subsection*{Desventajas}
+
+			\begin{itemize}
+				\item Asume la independencia entre términos.
+				\item No considera la frecuencia de los términos en los documentos.
+			\end{itemize}
 
 
 \section*{ Modelo Indexación Semántica Latente (LSI)}
@@ -322,11 +349,11 @@ Para trabajar con la \emph{query} esta se lleva a un vector del tamaño de la ca
 Para hallar la similitud término-documento se utiliza, al igual que en el modelo vectorial, el cálculo del coseno del ángulo entre los vectores de los documentos y el vector de la \emph{query} $\vec{d_{j}}$ y $\vec{q_{k}}$ respectivamente, tomando como cada vector $\vec{d_{_{j}}}$ las columnas de \textbf{DTk}.
 
 
-Los resultados de este modelo son generalmente superiores a los que tienen encuenta solamente la frecuencia de términos. Sin embargo, es necesario un mayor desarrollo para que este enfoque sea lo suficientemente rápido para su uso en grandes sistemas de recuperación. 
+Los resultados de este modelo son generalmente superiores a los que tienen encuentra solamente la frecuencia de términos. Sin embargo, es necesario un mayor desarrollo para que este enfoque sea lo suficientemente rápido para su uso en grandes sistemas de recuperación. 
 
 \subsection*{Evaluación}
 
-Para el set de datos Cranfield, al calcular las métricas para todas las consultas tuvimos los siguientes resultados: 
+Para el set de datos \emph{Cranfield}, al calcular las métricas para todas las consultas tuvimos los siguientes resultados: 
 
 \begin{itemize}
 
@@ -337,11 +364,11 @@ Para el set de datos Cranfield, al calcular las métricas para todas las consult
 \end{itemize}
  
 
-Para el set de datos Vaswani, al calcular las métricas para todas las consultas tuvimos los siguientes resultados: 
+Para el set de datos \emph{Vaswani}, al calcular las métricas para todas las consultas tuvimos los siguientes resultados: 
 
 \begin{itemize}
 
-\item En este caso la demora de la ejecución de la recuperación es considerablemente alta debido a la gran cantidad de documentos que tiene este dataset unido a la complejidad temporal del modelo, tomando un tiempo estimado de 14 425s por consulta.
+\item En este caso la demora de la ejecución de la recuperación es considerablemente alta debido a la gran cantidad de documentos que tiene este \emph{dataset} unido a la complejidad temporal del modelo, tomando un tiempo estimado de 14 425s por consulta.
 
 \item Tomando los umbrales 0.2 y 0.4 se obtuvieron los siguientes resultados $Precisión_{0.2}=0.029 $, $Recobrado_{0.2}= 0.528$, $Fmedida_{0.2}=0.054$, $Precisión_{0.4}=0.079 $, $Recobrado_{0.4}= 0.186$, $Fmedida_{0.4}=0.112$ donde además de la gran diferencia entre las precisiones calculadas para los respectivos umbrales también la medida F indica que para esta colección grande es mejor exigir una mayor similitud entre los documentos y las consultas utilizando el valor de umbral 0.4 para maximizar esta medida sin que represente una disminución significativa del recobrado.
 
@@ -365,13 +392,11 @@ Para el set de datos Vaswani, al calcular las métricas para todas las consultas
 \subsection*{Desventajas}
 
 \begin{itemize}
- \item El costo espacial y temporal es muy alto comparado con otras técnicas como en este caso el modelo probabilístico y el vectorial, donde LSI ocupa mucho más espacio en memoria y demora más tiempo en devolver el ranking que eslos modelo. De esta manera resulta imposible aplicar el modelo a grandes colecciones de elementos, aunque es cierto que con procesadores de alta velocidad y de gran memoria disminuiría un poco este problema.
+ \item El costo espacial y temporal es muy alto comparado con otras técnicas como en este caso el modelo probabilístico y el vectorial, donde LSI ocupa mucho más espacio en memoria y demora más tiempo en devolver el \emph{ranking} que estos modelo. De esta manera resulta imposible aplicar el modelo a grandes colecciones de elementos, aunque es cierto que con procesadores de alta velocidad y de gran memoria disminuiría un poco este problema.
  
-\item El valor óptimo de la nueva dimensión a utilizar, nuestro k, es otro problema, pues para colecciones de más o menos documentos puede ser mejor la utilización de un k que de otro.
+\item El valor óptimo de la nueva dimensión a utilizar, nuestro $ k $, es otro problema, pues para colecciones de más o menos documentos puede ser mejor la utilización de un $ k $ que de otro.
  
 \end{itemize}
-
-
 
 
 \end{document}

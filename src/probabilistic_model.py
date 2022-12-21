@@ -163,80 +163,43 @@ class ProbabilisticModel(Model):
         return v_term
 
 
-    # def sim(self, feedback: bool):
-    #     """
-    #     Computes the similarity between the query and the documents from the collection
-    #     takes as a constant value p_i = 0.5
-    #     :get query_doc_sim: saves the similarity between the query and a documents
-    #     """
-    #     self.rsv = 0
-    #     self.query_doc_sim.clear()
-    #     for term in self.term_docs: # for each term
-    #         # r_term = len(self.term_docs[term]) / self.dataset.docslen # term r value
-            
-    #         idf_term = self.dataset.docslen / len(self.term_docs[term]) # term idf
-    #         # if feedback is False:                
-    #         #     self.term_p_r[term] = (0.5, r_term) # safes in the dictionary the value of r for the term and p stays constant (p = 0.5)
-    #         for doc in self.term_docs[term]: # for each doc in which the term apppears
-    #             if term in self.queryterms: # if the term is a query term                    
-    #                 self._rsv(term)
-                                                                            
-    #                 if not self.query_doc_sim.get(doc): # if it's the first time that the doc has a term in common with the query                             
-    #                     # if self.term_p_r[term][1] > 0 and self.term_p_r[term][0] > 0: # if the values don't indetermine the log function                            
-    #                     self.query_doc_sim[doc] = np.log10(idf_term) # similarity
-    #                     # else: # if some of the values indeterminate the log function
-    #                     #     self.query_doc_sim[doc] = 0
-    #                 else: # if at least one term has already been found common between the document and the query
-    #                     # if self.term_p_r[term][1] > 0 and self.term_p_r[term][0] > 0: # if the values don't indetermine the log function
-    #                     self.query_doc_sim[doc] = self.query_doc_sim[doc] + np.log10(idf_term) # sum the similarity already saved from the others terms that coincide in the document and the query 
-    #             
-    #             else: # if the term in the document isn't a query term     
-    #                 if not self.query_doc_sim.get(doc): # if the document hasn't been analyzed   
-    #                     self.query_doc_sim[doc] = 0 # the current similarity between the doc and the query is 0
-    
-    #    # Normalize similarity values
-    #    max = 0
-    #    for doc in self.query_doc_sim:
-    #        if self.query_doc_sim[doc] > max:
-    #            max = self.query_doc_sim[doc]
-    #    
-    #    if max != 0:
-    #       for doc in self.query_doc_sim:
-    #            self.query_doc_sim[doc] = self.query_doc_sim[doc] / max
-    
-    
     # def sim_feedback(self, feedback: bool, rank: list):
     #     """
     #     Computes the similarity between the query and the documents from the collection
     #     takes as a constant value p_i = 0.5
     #     :get query_doc_sim: saves the similarity between the query and a documents
     #     """
-    #     self.rsv = 0
+    #     v = len(rank)
+
     #     self.query_doc_sim.clear()
-    #     rr_doc = len(rank)
+
     #     for term in self.term_docs: # for each term
-    #         # r_term = len(self.term_docs[term]) / self.dataset.docslen # term r value
-    #         idf_term = self.dataset.docslen / len(self.term_docs[term]) # term idf
-    #         v_term = self.count_recov_with_term(term, rank)
+    #         v_t = self.count_recov_with_term(term, rank)
+
+    #         r_term = len(self.term_docs[term]) / self.dataset.docslen # term r value
+
+    #         # if feedback is False:                
+    #         #     self.term_p_r[term] = (0.5, r_term) # safes in the dictionary the value of r for the term and p stays constant (p = 0.5)
+
     #         for doc in self.term_docs[term]: # for each doc in which the term apppears
-                
-    #             if term in self.queryterms: # if the term is a query term
-                                                         
+    #             if term in self.queryterms: # if the term is a query term                                                    
     #                 if not self.query_doc_sim.get(doc): # if it's the first time that the doc has a term in common with the query                             
-    #                     self.query_doc_sim[doc] = np.log10((v_term + 0.5) / (rr_doc - v_term + 1)) + np.log10(idf_term) # similarity
+    #                     self.query_doc_sim[doc] = np.log10((v_t + 1/2) / (v - v_t + 1)) + np.log10(self.dataset.docslen / len(self.term_docs[term]))
     #                 else: # if at least one term has already been found common between the document and the query
-    #                     self.query_doc_sim[doc] = self.query_doc_sim[doc] + np.log10((v_term + 0.5) / (rr_doc - v_term + 1)) + np.log10(idf_term) # similarity
-    #             
+    #                     # if self.term_p_r[term][1] > 0 and self.term_p_r[term][0] > 0: # if the values don't indetermine the log function
+    #                     self.query_doc_sim[doc] = self.query_doc_sim[doc] + np.log10((v_t + 1/2) / (v - v_t + 1)) + np.log10(self.dataset.docslen / len(self.term_docs[term])) # sum the similarity already saved from the others terms that coincide in the document and the query 
+                
     #             else: # if the term in the document isn't a query term     
     #                 if not self.query_doc_sim.get(doc): # if the document hasn't been analyzed   
     #                     self.query_doc_sim[doc] = 0 # the current similarity between the doc and the query is 0
     
-    #    # Normalize similarity values
-    #    max = 0
-    #    for doc in self.query_doc_sim:
-    #        if self.query_doc_sim[doc] > max:
-    #            max = self.query_doc_sim[doc]
-    #    
-    #    if max != 0:
-    #       for doc in self.query_doc_sim:
-    #            self.query_doc_sim[doc] = self.query_doc_sim[doc] / max
+    #     # Normalize similarity values
+    #     max = 0
+    #     for doc in self.query_doc_sim:
+    #         if self.query_doc_sim[doc] > max:
+    #             max = self.query_doc_sim[doc]
+       
+    #     if max != 0:
+    #         for doc in self.query_doc_sim:
+    #             self.query_doc_sim[doc] = self.query_doc_sim[doc] / max
+        
