@@ -13,11 +13,6 @@ from probabilistic_model import ProbabilisticModel
 from latent_semantics_model import LSIModel
 from dataset import load
 
-for dataset in ['cranfield', 'vaswani']:
-    ds= load(dataset)
-    print('downloading....')
-    for i in ds.docs_iter():
-        i
 
 from math import ceil
 from os.path import realpath, join, dirname
@@ -128,7 +123,7 @@ class Visual:
         self.mode= st.sidebar.selectbox("Mode", ["Example queries", "Text", 'All queries'])
 
         with st.sidebar.expander(label='Options'):
-            self.threshold= st.slider("Threshold", min_value=0.0, max_value=1.0, value=0.2, step= 0.01)
+            self.threshold= st.slider("Threshold", min_value=0.0, max_value=1.0, value=0.4, step= 0.01)
             self.beta= st.slider('Beta', min_value=0.0, max_value=2.0, value=1.0, step= 0.01)
 
         st.sidebar.markdown('-----------------')
