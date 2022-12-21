@@ -6,10 +6,18 @@ st.set_page_config(
         initial_sidebar_state="expanded",
     )
 
+
+
 from vector_model import Datasets, Model, VectorModel
 from probabilistic_model import ProbabilisticModel
 from latent_semantics_model import LSIModel
+from dataset import load
 
+for dataset in ['cranfield', 'vaswani']:
+    ds= load(dataset)
+    print('downloading....')
+    for i in ds.docs_iter():
+        i
 
 from math import ceil
 from os.path import realpath, join, dirname
